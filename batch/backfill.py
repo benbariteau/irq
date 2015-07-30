@@ -23,7 +23,7 @@ def insert_quotes(cursor, quotes, is_nishbot=False, is_offensive=False):
         (text, score, time_created, is_offensive, is_nishbot)
         VALUES (?, 0, ?, ?, ?);
     """, [
-        (quote, time.time(), is_offensive, is_nishbot)
+        (quote, int(time.time()), is_offensive, is_nishbot)
         for quote in quotes
     ])
 
