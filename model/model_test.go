@@ -35,15 +35,6 @@ func (tm TestModel) Close() {
 }
 
 func createTestModel(quotes ...Quote) (tm TestModel, err error) {
-	if len(quotes) == 0 {
-		quotes = []Quote{
-			Quote{
-				ID:          1,
-				Text:        "fart joke",
-				TimeCreated: time.Unix(0, 0),
-			},
-		}
-	}
 	// create temp sqlite DB
 	f, err := ioutil.TempFile("", "quotedb")
 	if err != nil {
@@ -90,27 +81,16 @@ func createTestModel(quotes ...Quote) (tm TestModel, err error) {
 	return
 }
 
-func fromQuote(quote Quote) rawQuote {
-	return rawQuote{
-		ID:          quote.ID,
-		Text:        quote.Text,
-		Score:       quote.Score,
-		TimeCreated: quote.TimeCreated.Unix(),
-		IsOffensive: boolToInt(quote.IsOffensive),
-		IsNishbot:   boolToInt(quote.IsNishbot),
-	}
-}
-
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	} else {
-		return 0
-	}
-}
-
 func TestGetQuote(t *testing.T) {
-	tm, err := createTestModel()
+	expected := Quote{
+		ID:          1,
+		Text:        "fart joke",
+		Score:       0,
+		TimeCreated: time.Unix(0, 0),
+		IsOffensive: false,
+		IsNishbot:   false,
+	}
+	tm, err := createTestModel(expected)
 	defer tm.Close()
 	if err != nil {
 		t.Error("Got unexpected error: ", err)
@@ -119,15 +99,6 @@ func TestGetQuote(t *testing.T) {
 	quote, err := tm.m.GetQuote(1)
 	if err != nil {
 		t.Error("Got non-nil error: ", err)
-	}
-
-	expected := Quote{
-		ID:          1,
-		Text:        "fart joke",
-		Score:       0,
-		TimeCreated: time.Unix(0, 0),
-		IsOffensive: false,
-		IsNishbot:   false,
 	}
 
 	if !reflect.DeepEqual(quote, expected) {
@@ -226,5 +197,40 @@ func TestGetQuotes(t *testing.T) {
 		if !reflect.DeepEqual(quotes, test.expected) {
 			t.Error("Got: ", quotes, "\nExpected:", test.expected)
 		}
+	}
+}
+
+func TestAddQuote(t *testing.T) {
+	tm, err := createTestModel()
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	quote := Quote{
+		ID:   1,
+		Text: "php joke",
+	}
+	tm.m.AddQuote(quote)
+
+	gotQuote, err := tm.m.GetQuote(1)
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	if gotQuote.ID != quote.ID {
+		t.Error("quote.ID\nGot: ", gotQuote.ID, "\nExpected:", quote.ID)
+	}
+	if gotQuote.Text != quote.Text {
+		t.Error("Got: ", gotQuote.Text, "\nExpected:", quote.Text)
+	}
+	if gotQuote.Score != quote.Score {
+		t.Error("Got: ", gotQuote.Score, "\nExpected:", quote.Score)
+	}
+	if gotQuote.IsOffensive != quote.IsOffensive {
+		t.Error("Got: ", gotQuote.IsOffensive, "\nExpected:", quote.IsOffensive)
+	}
+	if gotQuote.IsNishbot != quote.IsNishbot {
+		t.Error("Got: ", gotQuote.IsNishbot, "\nExpected:", quote.IsNishbot)
 	}
 }

@@ -130,6 +130,38 @@ func genOffsetClause(offset int) string {
 	return fmt.Sprint("OFFSET ", offset)
 }
 
+func (m Model) AddQuote(q Quote) (err error) {
+	rawQ := fromQuote(q)
+	_, err = m.db.Exec(
+		"INSERT INTO quote(text, score, time_created, is_offensive, is_nishbot) values(?, ?, ?, ?, ?)",
+		rawQ.Text,
+		rawQ.Score,
+		time.Now().Unix(),
+		rawQ.IsOffensive,
+		rawQ.IsNishbot,
+	)
+	return
+}
+
+func fromQuote(quote Quote) rawQuote {
+	return rawQuote{
+		ID:          quote.ID,
+		Text:        quote.Text,
+		Score:       quote.Score,
+		TimeCreated: quote.TimeCreated.Unix(),
+		IsOffensive: boolToInt(quote.IsOffensive),
+		IsNishbot:   boolToInt(quote.IsNishbot),
+	}
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	} else {
+		return 0
+	}
+}
+
 func (m Model) Close() error {
 	return m.db.Close()
 }
