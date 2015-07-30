@@ -1,6 +1,16 @@
+{{ range $index, $quote := .quotes }}
 <div class="quote panel panel-default">
     <div class="panel-heading">
-        <a href="#">#{{.id}} <span class="badge">{{.score}}</span></a>
+        <a href="/quote/{{ $quote.ID }}">
+            #{{ $quote.ID }}
+        </a>
+
+        <div class="btn-group" role="group">
+            <a href="#" role="button" class="btn btn-default btn-xs">--</a>
+            <a href="#" role="button" class="btn btn-default disabled btn-xs">{{ $quote.Score }}</button>
+            <a href="#" role="button" class="btn btn-default btn-xs">++</a>
+        </div>
     </div>
-    <div class="panel-body">{{.text}}</div>
+    <div class="panel-body">{{ $quote.Text }}</div>
 </div>
+{{ end }}
