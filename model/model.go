@@ -2,6 +2,8 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -59,6 +61,10 @@ func (m Model) GetQuote(id int) (quote Quote, err error) {
 		return
 	}
 
+	return toQuote(rawQ), nil
+}
+
+func toQuote(rawQ rawQuote) Quote {
 	return Quote{
 		ID:          rawQ.ID,
 		Text:        rawQ.Text,
@@ -66,7 +72,55 @@ func (m Model) GetQuote(id int) (quote Quote, err error) {
 		TimeCreated: time.Unix(int64(rawQ.TimeCreated), 0),
 		IsOffensive: rawQ.IsOffensive != 0,
 		IsNishbot:   rawQ.IsNishbot != 0,
-	}, nil
+	}
+}
+
+func (m Model) GetQuotes(limit int, orderBy ...string) (quotes []Quote, err error) {
+	rows, err := m.db.Query(
+		strings.Join(
+			[]string{
+				"SELECT id, text, score, time_created, is_offensive, is_nishbot",
+				"FROM quote",
+				genOrderBy(orderBy),
+				genLimit(limit),
+			},
+			" ",
+		),
+	)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rawQ := rawQuote{}
+		err = rows.Scan(
+			&rawQ.ID,
+			&rawQ.Text,
+			&rawQ.Score,
+			&rawQ.TimeCreated,
+			&rawQ.IsOffensive,
+			&rawQ.IsNishbot,
+		)
+		if err != nil {
+			return
+		}
+		quotes = append(quotes, toQuote(rawQ))
+	}
+	return
+}
+
+func genOrderBy(orderByColumns []string) string {
+	if len(orderByColumns) == 0 {
+		return ""
+	}
+	return "ORDER BY " + strings.Join(orderByColumns, ", ")
+}
+
+func genLimit(limit int) string {
+	if limit == 0 {
+		return ""
+	}
+	return fmt.Sprint("LIMIT ", limit)
 }
 
 func (m Model) Close() error {

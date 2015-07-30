@@ -103,3 +103,32 @@ func TestGetQuote(t *testing.T) {
 		t.Error("Got: ", quote, "\nExpected:", expected)
 	}
 }
+
+func TestGetQuotes(t *testing.T) {
+	tm, err := createTestModel()
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	quotes, err := tm.m.GetQuotes(0)
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	expected := []Quote{
+		Quote{
+			ID:          1,
+			Text:        "fart joke",
+			Score:       0,
+			TimeCreated: time.Unix(0, 0),
+			IsOffensive: false,
+			IsNishbot:   false,
+		},
+	}
+
+	if !reflect.DeepEqual(quotes, expected) {
+		t.Error("Got: ", quotes, "\nExpected:", expected)
+	}
+
+}
