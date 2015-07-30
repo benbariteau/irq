@@ -162,6 +162,11 @@ func boolToInt(b bool) int {
 	}
 }
 
+func (m Model) DeleteQuote(id int) (err error) {
+	_, err = m.db.Exec("DELETE FROM quote WHERE id = ?", id)
+	return
+}
+
 func (m Model) Close() error {
 	return m.db.Close()
 }

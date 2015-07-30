@@ -234,3 +234,29 @@ func TestAddQuote(t *testing.T) {
 		t.Error("Got: ", gotQuote.IsNishbot, "\nExpected:", quote.IsNishbot)
 	}
 }
+
+func TestDeleteQuote(t *testing.T) {
+	tm, err := createTestModel(Quote{ID: 1})
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	q, err := tm.m.GetQuote(1)
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+	if reflect.DeepEqual(q, Quote{}) {
+		t.Error("Quote should be non-zero-value: ", q)
+	}
+
+	tm.m.DeleteQuote(1)
+
+	q, err = tm.m.GetQuote(1)
+	if err == nil {
+		t.Error("got nil when error expected")
+	}
+	if !reflect.DeepEqual(q, Quote{}) {
+		t.Error("Quote should be zero value", q)
+	}
+}
