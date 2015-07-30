@@ -23,5 +23,7 @@ _testmain.go
 *.test
 *.prof
 *.db
+*.swp
+*.swo
 batch/backfill_data/*
 *.pyc
