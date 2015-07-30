@@ -167,6 +167,29 @@ func (m Model) DeleteQuote(id int) (err error) {
 	return
 }
 
+func (m Model) VoteQuote(id int, vote int) (err error) {
+	q, err := m.GetQuote(id)
+	if err != nil {
+		return
+	}
+
+	newScore := q.Score + vote
+
+	_, err = m.db.Exec("UPDATE quote SET score = ? where id = ?", newScore, id)
+	return
+}
+
+func voteRuneToInt(vote rune) int {
+	switch vote {
+	case '+':
+		return 1
+	case '-':
+		return -1
+	default:
+		return 0
+	}
+}
+
 func (m Model) Close() error {
 	return m.db.Close()
 }

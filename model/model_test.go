@@ -260,3 +260,43 @@ func TestDeleteQuote(t *testing.T) {
 		t.Error("Quote should be zero value", q)
 	}
 }
+
+func TestVoteQuote(t *testing.T) {
+	tm, err := createTestModel()
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	tests := []struct {
+		votes []int
+		score int
+	}{
+		{[]int{1}, 1},
+		{[]int{-1}, -1},
+		{[]int{1, -1}, 0},
+		{[]int{1, 1}, 2},
+		{[]int{-1, -1}, -2},
+	}
+
+	for i, test := range tests {
+		id := i + 1 // because 0 is a crap id
+		// add new score 0 quote
+		tm.m.AddQuote(Quote{ID: id, Score: 0})
+
+		// apply votes
+		for _, vote := range test.votes {
+			tm.m.VoteQuote(id, vote)
+		}
+
+		// check score
+		q, err := tm.m.GetQuote(id)
+		if err != nil {
+			t.Error("Got unexpected error: ", err)
+		}
+
+		if q.Score != test.score {
+			t.Error("Got: ", q.Score, ", Expected: ", test.score)
+		}
+	}
+}
