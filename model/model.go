@@ -26,7 +26,7 @@ type rawQuote struct {
 	ID          int
 	Text        string
 	Score       int
-	TimeCreated int
+	TimeCreated int64
 	IsOffensive int
 	IsNishbot   int
 }
@@ -69,20 +69,20 @@ func toQuote(rawQ rawQuote) Quote {
 		ID:          rawQ.ID,
 		Text:        rawQ.Text,
 		Score:       rawQ.Score,
-		TimeCreated: time.Unix(int64(rawQ.TimeCreated), 0),
+		TimeCreated: time.Unix(rawQ.TimeCreated, 0),
 		IsOffensive: rawQ.IsOffensive != 0,
 		IsNishbot:   rawQ.IsNishbot != 0,
 	}
 }
 
-func (m Model) GetQuotes(limit int, orderBy ...string) (quotes []Quote, err error) {
+func (m Model) GetQuotes(limit, offset int, orderBy ...string) (quotes []Quote, err error) {
 	rows, err := m.db.Query(
 		strings.Join(
 			[]string{
 				"SELECT id, text, score, time_created, is_offensive, is_nishbot",
 				"FROM quote",
 				genOrderBy(orderBy),
-				genLimit(limit),
+				genLimitOffsetClause(limit, offset),
 			},
 			" ",
 		),
@@ -116,11 +116,18 @@ func genOrderBy(orderByColumns []string) string {
 	return "ORDER BY " + strings.Join(orderByColumns, ", ")
 }
 
-func genLimit(limit int) string {
+func genLimitOffsetClause(limit, offset int) string {
 	if limit == 0 {
 		return ""
 	}
-	return fmt.Sprint("LIMIT ", limit)
+	return fmt.Sprint("LIMIT ", limit, " ", genOffsetClause(offset))
+}
+
+func genOffsetClause(offset int) string {
+	if offset == 0 {
+		return ""
+	}
+	return fmt.Sprint("OFFSET ", offset)
 }
 
 func (m Model) Close() error {

@@ -34,7 +34,16 @@ func (tm TestModel) Close() {
 	}
 }
 
-func createTestModel() (tm TestModel, err error) {
+func createTestModel(quotes ...Quote) (tm TestModel, err error) {
+	if len(quotes) == 0 {
+		quotes = []Quote{
+			Quote{
+				ID:          1,
+				Text:        "fart joke",
+				TimeCreated: time.Unix(0, 0),
+			},
+		}
+	}
 	// create temp sqlite DB
 	f, err := ioutil.TempFile("", "quotedb")
 	if err != nil {
@@ -62,20 +71,42 @@ func createTestModel() (tm TestModel, err error) {
 		return
 	}
 
-	_, err = m.db.Exec(
-		"insert into quote(id, text, score, time_created, is_offensive, is_nishbot) values(?, ?, ?, ?, ?, ?)",
-		1,
-		"fart joke",
-		0,
-		0,
-		0,
-		0,
-	)
-	if err != nil {
-		return
+	for _, quote := range quotes {
+		rawQ := fromQuote(quote)
+		_, err = m.db.Exec(
+			"insert into quote(id, text, score, time_created, is_offensive, is_nishbot) values(?, ?, ?, ?, ?, ?)",
+			rawQ.ID,
+			rawQ.Text,
+			rawQ.Score,
+			rawQ.TimeCreated,
+			rawQ.IsOffensive,
+			rawQ.IsNishbot,
+		)
+		if err != nil {
+			return
+		}
 	}
 
 	return
+}
+
+func fromQuote(quote Quote) rawQuote {
+	return rawQuote{
+		ID:          quote.ID,
+		Text:        quote.Text,
+		Score:       quote.Score,
+		TimeCreated: quote.TimeCreated.Unix(),
+		IsOffensive: boolToInt(quote.IsOffensive),
+		IsNishbot:   boolToInt(quote.IsNishbot),
+	}
+}
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	} else {
+		return 0
+	}
 }
 
 func TestGetQuote(t *testing.T) {
@@ -105,30 +136,95 @@ func TestGetQuote(t *testing.T) {
 }
 
 func TestGetQuotes(t *testing.T) {
-	tm, err := createTestModel()
-	defer tm.Close()
-	if err != nil {
-		t.Error("Got unexpected error: ", err)
-	}
-
-	quotes, err := tm.m.GetQuotes(0)
-	if err != nil {
-		t.Error("Got unexpected error: ", err)
-	}
-
-	expected := []Quote{
+	dbquotes := []Quote{
 		Quote{
 			ID:          1,
 			Text:        "fart joke",
 			Score:       0,
 			TimeCreated: time.Unix(0, 0),
+			IsOffensive: true,
+			IsNishbot:   false,
+		},
+		Quote{
+			ID:          2,
+			Text:        "javascript joke",
+			Score:       -5,
+			TimeCreated: time.Unix(10, 0),
+			IsOffensive: false,
+			IsNishbot:   false,
+		},
+		Quote{
+			ID:          3,
+			Text:        "python joke",
+			Score:       10,
+			TimeCreated: time.Unix(10, 0),
 			IsOffensive: false,
 			IsNishbot:   false,
 		},
 	}
 
-	if !reflect.DeepEqual(quotes, expected) {
-		t.Error("Got: ", quotes, "\nExpected:", expected)
+	tm, err := createTestModel(dbquotes...)
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
 	}
 
+	tests := []struct {
+		limit    int
+		offset   int
+		orderby  []string
+		expected []Quote
+	}{
+		{0, 0, []string{}, dbquotes},
+		// limit
+		{2, 0, []string{}, dbquotes[:2]},
+		// limit and offset
+		{2, 2, []string{}, dbquotes[2:]},
+		// order (no ordering, default ascending)
+		{
+			0,
+			0,
+			[]string{"Score"},
+			[]Quote{dbquotes[1], dbquotes[0], dbquotes[2]},
+		},
+		// order descending
+		{
+			0,
+			0,
+			[]string{"Score DESC"},
+			[]Quote{dbquotes[2], dbquotes[0], dbquotes[1]},
+		},
+		// order descending
+		{
+			0,
+			0,
+			[]string{"time_created ASC", "score DESC"},
+			[]Quote{dbquotes[0], dbquotes[2], dbquotes[1]},
+		},
+		// limit and ordering
+		{
+			2,
+			0,
+			[]string{"Score DESC"},
+			[]Quote{dbquotes[2], dbquotes[0]},
+		},
+		// limit, ordering, and offset
+		{
+			2,
+			2,
+			[]string{"Score DESC"},
+			[]Quote{dbquotes[1]},
+		},
+	}
+
+	for _, test := range tests {
+		quotes, err := tm.m.GetQuotes(test.limit, test.offset, test.orderby...)
+		if err != nil {
+			t.Error("Got unexpected error: ", err)
+		}
+
+		if !reflect.DeepEqual(quotes, test.expected) {
+			t.Error("Got: ", quotes, "\nExpected:", test.expected)
+		}
+	}
 }
