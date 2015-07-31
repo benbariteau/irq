@@ -20,6 +20,7 @@ func main() {
 	m.Get("/random", view.Random)
 	m.Get("/top", view.Top)
 	m.Get("/search", view.Search)
+	m.Get("/submit", view.Submit)
 	m.Get("/quote/:id", view.Quote)
 
 	m.Run()
