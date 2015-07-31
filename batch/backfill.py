@@ -6,7 +6,7 @@ def read_quotes_file(path):
     with open(path) as f:
         raw_text = f.read()
     return [
-        unicode(quote.strip())
+        unicode(quote.strip('\n\r'))
         for quote in raw_text.decode("utf-8").split('\n%') if quote.strip()
     ]
 
