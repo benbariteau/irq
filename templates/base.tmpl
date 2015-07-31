@@ -127,7 +127,14 @@
             function remove(e) {
                 if (confirm("Do you really want to delete this quote? Don't be a jerk!")) {
                     var quote = $(this).parents(".quote");
-                    quote[0].outerHTML = '<div class="alert alert-danger" role="alert"><b>BOOM!</b> This quote has been deleted.</div>';
+                    var id = $(this).data('id');
+                    $.ajax({
+                        url: "/quote/" + id,
+                        type: 'DELETE',
+                        success: function(e) {
+                            quote[0].outerHTML = '<div class="alert alert-danger" role="alert"><b>BOOM!</b> This quote has been deleted.</div>';
+                        },
+                    });
                 }
             }
             $('.remove-button').on('click', remove);

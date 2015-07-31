@@ -51,6 +51,7 @@ func main() {
 
 	m.Post("/submit", view.SubmitForm)
 	m.Post("/vote/:id", view.Vote)
+	m.Delete("/quote/:id", view.Delete)
 
 	m.Run()
 }
