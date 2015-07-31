@@ -4,7 +4,7 @@ import (
 	"github.com/firba1/irq/model"
 	"github.com/martini-contrib/render"
 	"net/http"
-    "strconv"
+	"strconv"
 )
 
 func Search(r render.Render, req *http.Request) {
@@ -34,7 +34,7 @@ func Search(r render.Render, req *http.Request) {
 	}
 
 	offset := (page - 1) * count
-    quotes, err := db.GetQuotes(model.Query{Limit: count, Offset: offset, Search: query})
+	quotes, err := db.GetQuotes(model.Query{Limit: count, Offset: offset, Search: query})
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
@@ -44,7 +44,7 @@ func Search(r render.Render, req *http.Request) {
 		return
 	}
 
-    allQuotes, err := db.GetQuotes(model.Query{Limit: 0, Offset: 0, Search: query})
+	total, err := db.CountQuotes(query)
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
@@ -54,8 +54,7 @@ func Search(r render.Render, req *http.Request) {
 		return
 	}
 
-    total := len(allQuotes)
-	maxPage := total / count + 1
+	maxPage := total/count + 1
 	previousPage := page - 1
 	nextPage := page + 1
 	if nextPage > maxPage {
@@ -67,12 +66,12 @@ func Search(r render.Render, req *http.Request) {
 		"quotes":         quotes,
 		"showPagination": true,
 		"count":          count,
-        "page": page,
+		"page":           page,
 		"previousPage":   previousPage,
 		"nextPage":       nextPage,
-        "total": total,
-        "maxPage": maxPage,
-        "query": query,
+		"total":          total,
+		"maxPage":        maxPage,
+		"query":          query,
 	}
 	r.HTML(200, "quote", env)
 }
