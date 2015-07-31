@@ -34,7 +34,12 @@ func Search(r render.Render, req *http.Request) {
 	}
 
 	offset := (page - 1) * count
-	quotes, err := db.GetQuotes(model.Query{Limit: count, Offset: offset, Search: query})
+	quotes, err := db.GetQuotes(model.Query{
+        Limit: count,
+        Offset: offset,
+        Search: query,
+        OrderBy: []string{"score DESC"},
+    })
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
