@@ -14,6 +14,9 @@
             white-space: pre;
             word-break: break-word;
         }
+        .quote .highlight {
+            background-color: yellow;
+        }
         </style>
     </head>
     <body>
@@ -60,6 +63,8 @@
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/1.8.7/url.min.js"></script>
+        <script src="/assets/js/jquery.highlight-5.js"></script>
         <script>
             function vote(value) {
                 return function(e) {
@@ -77,6 +82,11 @@
 
             $('.score-box').on('click', '.upvote', vote(1));
             $('.score-box').on('click', '.downvote', vote(-1));
+
+            var query = url("?query");
+            if (query) {
+                $('.quote .panel-body').highlight(query);
+            }
         </script>
     </body>
 </html>
