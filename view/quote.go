@@ -1,11 +1,11 @@
 package view
 
 import (
+	"fmt"
+	"github.com/firba1/irq/model"
 	"github.com/go-martini/martini"
-    "github.com/martini-contrib/render"
-    "strconv"
-    "github.com/firba1/irq/model"
-    "fmt"
+	"github.com/martini-contrib/render"
+	"strconv"
 )
 
 func Quote(r render.Render, params martini.Params) {
@@ -40,9 +40,9 @@ func Quote(r render.Render, params martini.Params) {
 	}
 
 	env := map[string]interface{}{
-		"title": fmt.Sprintf("#%d", quote.ID),
-		"quotes": []model.Quote{quote},
-        "showPagination": false,
+		"title":          fmt.Sprintf("#%d", quote.ID),
+		"quotes":         []model.Quote{quote},
+		"showPagination": false,
 	}
 	r.HTML(200, "quote", env)
 }

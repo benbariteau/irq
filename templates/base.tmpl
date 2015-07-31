@@ -60,5 +60,22 @@
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script>
+            function vote(value) {
+                return function(e) {
+                    var scoreBox = $(e.delegateTarget)
+                    var id = scoreBox.data('id');
+
+                    $.post('/vote/' + id, {
+                        count: value
+                    }).success(function(e) {
+                        scoreBox.find('.score').text(e.score);
+                    });
+                }
+            }
+
+            $('.score-box').on('click', '.upvote', vote(1));
+            $('.score-box').on('click', '.downvote', vote(-1));
+        </script>
     </body>
 </html>

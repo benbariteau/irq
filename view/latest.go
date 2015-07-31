@@ -33,10 +33,10 @@ func Latest(r render.Render, req *http.Request) {
 
 	offset := (page - 1) * count
 	quotes, err := db.GetQuotes(model.Query{
-        Limit: count,
-        Offset: offset,
-        OrderBy: []string{"id DESC"},
-    })
+		Limit:   count,
+		Offset:  offset,
+		OrderBy: []string{"id DESC"},
+	})
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
@@ -56,8 +56,8 @@ func Latest(r render.Render, req *http.Request) {
 		return
 	}
 
-    total := len(allQuotes)
-	maxPage := total / count + 1
+	total := len(allQuotes)
+	maxPage := total/count + 1
 	previousPage := page - 1
 	nextPage := page + 1
 	if nextPage > maxPage {
@@ -69,11 +69,11 @@ func Latest(r render.Render, req *http.Request) {
 		"quotes":         quotes,
 		"showPagination": true,
 		"count":          count,
-        "page": page,
+		"page":           page,
 		"previousPage":   previousPage,
 		"nextPage":       nextPage,
-        "total": total,
-        "maxPage": maxPage,
+		"total":          total,
+		"maxPage":        maxPage,
 	}
 	r.HTML(200, "quote", env)
 }

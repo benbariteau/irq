@@ -25,6 +25,7 @@ func main() {
 	m.Get("/quote/:id", view.Quote)
 
 	m.Post("/submit", view.SubmitForm)
+	m.Post("/vote/:id", view.Vote)
 
 	m.Run()
 }

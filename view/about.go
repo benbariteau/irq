@@ -1,7 +1,7 @@
 package view
 
 import (
-    "github.com/martini-contrib/render"
+	"github.com/martini-contrib/render"
 )
 
 func About(r render.Render) {

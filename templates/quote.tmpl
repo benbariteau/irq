@@ -17,10 +17,10 @@
             #{{ $quote.ID }}
         </a>
 
-        <div class="btn-group" role="group">
-            <a href="#" role="button" class="btn btn-default btn-xs">--</a>
-            <a href="#" role="button" class="btn btn-default disabled btn-xs">{{ $quote.Score }}</button>
-            <a href="#" role="button" class="btn btn-default btn-xs">++</a>
+        <div class="btn-group score-box" role="group" data-id="{{ $quote.ID }}">
+            <a href="#" role="button" class="btn btn-default btn-xs downvote">--</a>
+            <a href="#" role="button" class="btn btn-default disabled btn-xs score">{{ $quote.Score }}</button>
+            <a href="#" role="button" class="btn btn-default btn-xs upvote">++</a>
         </div>
     </div>
     <div class="panel-body">{{ $quote.Text }}</div>
