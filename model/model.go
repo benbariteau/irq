@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 
@@ -11,24 +10,6 @@ import (
 
 type Model struct {
 	db *sql.DB
-}
-
-type Quote struct {
-	ID          int
-	Text        string
-	Score       int
-	TimeCreated time.Time
-	IsOffensive bool
-	IsNishbot   bool
-}
-
-type rawQuote struct {
-	ID          int
-	Text        string
-	Score       int
-	TimeCreated int64
-	IsOffensive int
-	IsNishbot   int
 }
 
 /*
@@ -62,52 +43,6 @@ func (m Model) GetQuote(id int) (quote Quote, err error) {
 	}
 
 	return toQuote(rawQ), nil
-}
-
-func toQuote(rawQ rawQuote) Quote {
-	return Quote{
-		ID:          rawQ.ID,
-		Text:        rawQ.Text,
-		Score:       rawQ.Score,
-		TimeCreated: time.Unix(rawQ.TimeCreated, 0),
-		IsOffensive: rawQ.IsOffensive != 0,
-		IsNishbot:   rawQ.IsNishbot != 0,
-	}
-}
-
-type Query struct {
-	Search  string
-	Limit   int
-	Offset  int
-	OrderBy []string
-}
-
-func (q Query) toSQL() string {
-	parts := make([]string, 0, 4)
-
-	if q.Search != "" {
-		parts = append(parts, searchWhereClause(q.Search))
-	}
-
-	if len(q.OrderBy) != 0 {
-		parts = append(parts, "ORDER BY "+strings.Join(q.OrderBy, ", "))
-	}
-
-	if q.Limit != 0 {
-		parts = append(parts, fmt.Sprint("LIMIT ", q.Limit))
-		if q.Offset != 0 {
-			parts = append(parts, fmt.Sprint("OFFSET ", q.Offset))
-		}
-	}
-
-	return strings.Join(parts, "\n")
-}
-
-func searchWhereClause(search string) string {
-	if search == "" {
-		return ""
-	}
-	return "WHERE text LIKE '%" + search + "%'"
 }
 
 func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
@@ -156,27 +91,6 @@ func (m Model) CountQuotes(search string) (count int, err error) {
 	return
 }
 
-func genOrderBy(orderByColumns []string) string {
-	if len(orderByColumns) == 0 {
-		return ""
-	}
-	return "ORDER BY " + strings.Join(orderByColumns, ", ")
-}
-
-func genLimitOffsetClause(limit, offset int) string {
-	if limit == 0 {
-		return ""
-	}
-	return fmt.Sprint("LIMIT ", limit, " ", genOffsetClause(offset))
-}
-
-func genOffsetClause(offset int) string {
-	if offset == 0 {
-		return ""
-	}
-	return fmt.Sprint("OFFSET ", offset)
-}
-
 func (m Model) AddQuote(q Quote) (err error) {
 	rawQ := fromQuote(q)
 	_, err = m.db.Exec(
@@ -188,25 +102,6 @@ func (m Model) AddQuote(q Quote) (err error) {
 		rawQ.IsNishbot,
 	)
 	return
-}
-
-func fromQuote(quote Quote) rawQuote {
-	return rawQuote{
-		ID:          quote.ID,
-		Text:        quote.Text,
-		Score:       quote.Score,
-		TimeCreated: quote.TimeCreated.Unix(),
-		IsOffensive: boolToInt(quote.IsOffensive),
-		IsNishbot:   boolToInt(quote.IsNishbot),
-	}
-}
-
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	} else {
-		return 0
-	}
 }
 
 func (m Model) DeleteQuote(id int) (err error) {
@@ -224,17 +119,6 @@ func (m Model) VoteQuote(id int, vote int) (err error) {
 
 	_, err = m.db.Exec("UPDATE quote SET score = ? where id = ?", newScore, id)
 	return
-}
-
-func voteRuneToInt(vote rune) int {
-	switch vote {
-	case '+':
-		return 1
-	case '-':
-		return -1
-	default:
-		return 0
-	}
 }
 
 func (m Model) Close() error {
