@@ -86,7 +86,7 @@ func (q Query) toSQL() string {
 	parts := make([]string, 0, 4)
 
 	if q.Search != "" {
-		parts = append(parts, "WHERE text LIKE '%"+q.Search+"%'")
+		parts = append(parts, searchWhereClause(q.Search))
 	}
 
 	if len(q.OrderBy) != 0 {
@@ -103,6 +103,13 @@ func (q Query) toSQL() string {
 	return strings.Join(parts, "\n")
 }
 
+func searchWhereClause(search string) string {
+	if search == "" {
+		return ""
+	}
+	return "WHERE text LIKE '%" + search + "%'"
+}
+
 func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
 	query := strings.Join(
 		[]string{
@@ -112,7 +119,6 @@ func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
 		},
 		"\n",
 	)
-	fmt.Println(query)
 	rows, err := m.db.Query(query)
 	if err != nil {
 		return
@@ -133,6 +139,20 @@ func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
 		}
 		quotes = append(quotes, toQuote(rawQ))
 	}
+	return
+}
+
+func (m Model) CountQuotes(search string) (count int, err error) {
+	err = m.db.QueryRow(
+		strings.Join(
+			[]string{
+				"SELECT count(*)",
+				"FROM quote",
+				searchWhereClause(search),
+			},
+			"\n",
+		),
+	).Scan(&count)
 	return
 }
 

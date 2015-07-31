@@ -300,3 +300,55 @@ func TestVoteQuote(t *testing.T) {
 		}
 	}
 }
+
+func TestCountQuotes(t *testing.T) {
+	dbquotes := []Quote{
+		Quote{
+			ID:          1,
+			Text:        "fart joke",
+			Score:       0,
+			TimeCreated: time.Unix(0, 0),
+			IsOffensive: true,
+			IsNishbot:   false,
+		},
+		Quote{
+			ID:          2,
+			Text:        "javascript joke",
+			Score:       -5,
+			TimeCreated: time.Unix(10, 0),
+			IsOffensive: false,
+			IsNishbot:   false,
+		},
+		Quote{
+			ID:          3,
+			Text:        "python joke",
+			Score:       10,
+			TimeCreated: time.Unix(10, 0),
+			IsOffensive: false,
+			IsNishbot:   false,
+		},
+	}
+	tm, err := createTestModel(dbquotes...)
+	defer tm.Close()
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
+
+	tests := []struct {
+		search string
+		count  int
+	}{
+		{"", 3},
+		{"python", 1},
+	}
+
+	for _, test := range tests {
+		count, err := tm.m.CountQuotes(test.search)
+		if err != nil {
+			t.Error("Got unexpected error: ", err)
+		}
+		if count != test.count {
+			t.Error("Got: ", count, ", Expected: ", test.count)
+		}
+	}
+}
