@@ -16,6 +16,7 @@ func main() {
 	m.Get("/", view.Index)
 	m.Get("/latest", view.Latest)
 	m.Get("/all", view.All)
+	m.Get("/about", view.About)
 	m.Get("/random", view.Random)
 	m.Get("/top", view.Top)
 	m.Get("/search", view.Search)
