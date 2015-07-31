@@ -63,6 +63,7 @@
         <script>
             function vote(value) {
                 return function(e) {
+                    e.preventDefault();
                     var scoreBox = $(e.delegateTarget)
                     var id = scoreBox.data('id');
 
