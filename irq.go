@@ -18,7 +18,7 @@ func main() {
 	m.Get("/all", view.All)
 	m.Get("/about", view.About)
 	m.Get("/random", view.Random)
-	m.Get("/fortune", view.Random)
+	m.Get("/random.json", view.RandomJson)
 	m.Get("/top", view.Top)
 	m.Get("/search", view.Search)
 	m.Get("/submit", view.Submit)
