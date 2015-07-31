@@ -8,39 +8,29 @@ import (
 	"strconv"
 )
 
-func Quote(r render.Render, params martini.Params) {
+func Quote(db model.Model, r render.Render, params martini.Params) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "invalid quote id"},
+		env := ErrorPageEnv{
+			PageEnv{Title: "error"},
+			ErrorEnv{ErrorMessage: "invalid quote id"},
 		}
 		r.HTML(404, "error", env)
 		return
 	}
 
-	db, err := model.NewModel("quotes.db")
-	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "db connection failed"},
-		}
-		r.HTML(500, "error", env)
-		return
-	}
-
 	quote, err := db.GetQuote(id)
 	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "quote not found"},
+		env := ErrorPageEnv{
+			PageEnv{Title: "error"},
+			ErrorEnv{ErrorMessage: "quote not found"},
 		}
 		r.HTML(404, "error", env)
 		return
 	}
 
 	env := quoteEnv{
-		pageEnv:        pageEnv{Title: fmt.Sprintf("#%d", quote.ID)},
+		PageEnv:        PageEnv{Title: fmt.Sprintf("#%d", quote.ID)},
 		Quotes:         []model.Quote{quote},
 		ShowPagination: false,
 	}

@@ -4,21 +4,21 @@ import (
 	"github.com/firba1/irq/model"
 )
 
-type pageEnv struct {
+type PageEnv struct {
 	Title string
 }
 
-type errorEnv struct {
+type ErrorEnv struct {
 	ErrorMessage string `json:"error_message"`
 }
 
-type errorPageEnv struct {
-	pageEnv
-	errorEnv
+type ErrorPageEnv struct {
+	PageEnv
+	ErrorEnv
 }
 
 type quoteEnv struct {
-	pageEnv
+	PageEnv
 	Quotes         []model.Quote
 	ShowPagination bool
 	Count          int

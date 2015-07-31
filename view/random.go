@@ -7,25 +7,15 @@ import (
 	"net/http"
 )
 
-func Random(r render.Render) {
-	db, err := model.NewModel("quotes.db")
-	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "db connection failed"},
-		}
-		r.HTML(500, "error", env)
-		return
-	}
-
+func Random(db model.Model, r render.Render) {
 	quotes, err := db.GetQuotes(model.Query{
 		Limit:   1,
 		OrderBy: []string{"random()"},
 	})
 	if err != nil || len(quotes) == 0 {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "quote not found"},
+		env := ErrorPageEnv{
+			PageEnv{Title: "error"},
+			ErrorEnv{ErrorMessage: "quote not found"},
 		}
 		r.HTML(500, "error", env)
 		return
@@ -34,17 +24,10 @@ func Random(r render.Render) {
 	r.Redirect(fmt.Sprintf("/quote/%d", quotes[0].ID))
 }
 
-func RandomJson(r render.Render, req *http.Request) {
+func RandomJson(db model.Model, r render.Render, req *http.Request) {
 	qs := req.URL.Query()
 
 	query := qs.Get("query")
-
-	db, err := model.NewModel("quotes.db")
-
-	if err != nil {
-		r.JSON(500, errorEnv{"db connection failed"})
-		return
-	}
 
 	quotes, err := db.GetQuotes(model.Query{
 		Limit:   1,
@@ -53,7 +36,7 @@ func RandomJson(r render.Render, req *http.Request) {
 	})
 
 	if err != nil || len(quotes) == 0 {
-		r.JSON(500, errorEnv{"quote not found"})
+		r.JSON(500, ErrorEnv{"quote not found"})
 		return
 	}
 

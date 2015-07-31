@@ -8,34 +8,28 @@ import (
 	"strconv"
 )
 
-func Vote(req *http.Request, r render.Render, params martini.Params) {
+func Vote(db model.Model, req *http.Request, r render.Render, params martini.Params) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		r.JSON(404, errorEnv{"invalid quote id"})
+		r.JSON(404, ErrorEnv{"invalid quote id"})
 		return
 	}
 
 	count, err := strconv.Atoi(req.FormValue("count"))
 	if err != nil {
-		r.JSON(404, errorEnv{"invalid vote count"})
-		return
-	}
-
-	db, err := model.NewModel("quotes.db")
-	if err != nil {
-		r.JSON(500, errorEnv{"what happen db conn no work"})
+		r.JSON(404, ErrorEnv{"invalid vote count"})
 		return
 	}
 
 	err = db.VoteQuote(id, count)
 	if err != nil {
-		r.JSON(500, errorEnv{"unable to vote quote"})
+		r.JSON(500, ErrorEnv{"unable to vote quote"})
 		return
 	}
 
 	quote, err := db.GetQuote(id)
 	if err != nil {
-		r.JSON(404, errorEnv{"quote not found"})
+		r.JSON(404, ErrorEnv{"quote not found"})
 		return
 	}
 

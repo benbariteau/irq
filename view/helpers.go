@@ -11,7 +11,7 @@ func maxPage(totalItems, perPage int) int {
 	return (totalItems-1)/perPage + 1
 }
 
-func QuotesBase(r render.Render, req *http.Request, title string, orderBy []string) {
+func QuotesBase(db model.Model, r render.Render, req *http.Request, title string, orderBy []string) {
 	qs := req.URL.Query()
 
 	query := qs.Get("query")
@@ -26,16 +26,6 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 		count = 20
 	}
 
-	db, err := model.NewModel("quotes.db")
-	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "db connection failed"},
-		}
-		r.HTML(500, "error", env)
-		return
-	}
-
 	offset := (page - 1) * count
 	quotes, err := db.GetQuotes(model.Query{
 		Limit:   count,
@@ -44,9 +34,9 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 		OrderBy: orderBy,
 	})
 	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "failed to get quotes"},
+		env := ErrorPageEnv{
+			PageEnv{Title: "error"},
+			ErrorEnv{ErrorMessage: "failed to get quotes"},
 		}
 		r.HTML(404, "error", env)
 		return
@@ -54,9 +44,9 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 
 	total, err := db.CountQuotes(query)
 	if err != nil {
-		env := errorPageEnv{
-			pageEnv{Title: "error"},
-			errorEnv{ErrorMessage: "failed to get quotes"},
+		env := ErrorPageEnv{
+			PageEnv{Title: "error"},
+			ErrorEnv{ErrorMessage: "failed to get quotes"},
 		}
 		r.HTML(404, "error", env)
 		return
@@ -70,7 +60,7 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 	}
 
 	env := quoteEnv{
-		pageEnv: pageEnv{
+		PageEnv: PageEnv{
 			Title: title,
 		},
 		Quotes:         quotes,
