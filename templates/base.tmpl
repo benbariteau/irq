@@ -80,6 +80,26 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/1.8.7/url.min.js"></script>
         <script src="/assets/js/jquery.highlight-5.js"></script>
         <script>
+            function updateScore(element, score) {
+                element.text(score);
+                element.removeClass('btn-success btn-danger btn-default');
+
+                if (score > 0) {
+                    element.addClass('btn-success');
+                } else if (score < 0) {
+                    element.addClass('btn-danger');
+                } else {
+                    element.addClass('btn-default');
+                }
+            }
+
+            // TODO: Remove this hack and set the initial state in the template
+            $('.score').each(function() {
+                var element = $(this);
+                var score = parseInt($(this).text(), 10);
+                updateScore(element, score);
+            });
+
             function vote(value) {
                 return function(e) {
                     e.preventDefault();
@@ -89,7 +109,7 @@
                     $.post('/vote/' + id, {
                         count: value
                     }).success(function(e) {
-                        scoreBox.find('.score').text(e.score);
+                        updateScore(scoreBox.find('.score'), e.score);
                     });
                 }
             }
