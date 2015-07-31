@@ -1,25 +1,25 @@
 package view
 
 import (
-    "github.com/martini-contrib/render"
-    "github.com/firba1/irq/model"
-    "net/http"
-    "strconv"
+	"github.com/firba1/irq/model"
+	"github.com/martini-contrib/render"
+	"net/http"
+	"strconv"
 )
 
 func All(r render.Render, req *http.Request) {
 
-    qs := req.URL.Query()
+	qs := req.URL.Query()
 
-    page, err := strconv.Atoi(qs.Get("page"))
-    if err != nil {
-        page = 1
-    }
+	page, err := strconv.Atoi(qs.Get("page"))
+	if err != nil {
+		page = 1
+	}
 
-    count, err := strconv.Atoi(qs.Get("count"))
-    if err != nil || count == 0 {
-        count = 20
-    }
+	count, err := strconv.Atoi(qs.Get("count"))
+	if err != nil || count == 0 {
+		count = 20
+	}
 
 	db, err := model.NewModel("quotes.db")
 	if err != nil {
@@ -31,8 +31,8 @@ func All(r render.Render, req *http.Request) {
 		return
 	}
 
-    offset := (page - 1) * count
-	quotes, err := db.GetQuotes(count, offset)
+	offset := (page - 1) * count
+	quotes, err := db.GetQuotes(model.Query{Limit: count, Offset: offset})
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
@@ -42,7 +42,7 @@ func All(r render.Render, req *http.Request) {
 		return
 	}
 
-	allQuotes, err := db.GetQuotes(0, 0)
+	allQuotes, err := db.GetQuotes(model.Query{})
 	if err != nil {
 		env := map[string]interface{}{
 			"title": "error",
@@ -52,20 +52,20 @@ func All(r render.Render, req *http.Request) {
 		return
 	}
 
-    maxPage := len(allQuotes) / count + 1
-    previousPage := page - 1
-    nextPage := page + 1
-    if nextPage > maxPage {
-        nextPage = 0
-    }
+	maxPage := len(allQuotes)/count + 1
+	previousPage := page - 1
+	nextPage := page + 1
+	if nextPage > maxPage {
+		nextPage = 0
+	}
 
 	env := map[string]interface{}{
-		"title": "All",
-		"quotes": quotes,
-        "showPagination": true,
-        "count": count,
-        "previousPage": previousPage,
-        "nextPage": nextPage,
+		"title":          "All",
+		"quotes":         quotes,
+		"showPagination": true,
+		"count":          count,
+		"previousPage":   previousPage,
+		"nextPage":       nextPage,
 	}
 	r.HTML(200, "quote", env)
 }
