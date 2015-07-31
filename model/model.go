@@ -75,18 +75,45 @@ func toQuote(rawQ rawQuote) Quote {
 	}
 }
 
-func (m Model) GetQuotes(limit, offset int, orderBy ...string) (quotes []Quote, err error) {
-	rows, err := m.db.Query(
-		strings.Join(
-			[]string{
-				"SELECT id, text, score, time_created, is_offensive, is_nishbot",
-				"FROM quote",
-				genOrderBy(orderBy),
-				genLimitOffsetClause(limit, offset),
-			},
-			" ",
-		),
+type Query struct {
+	Search  string
+	Limit   int
+	Offset  int
+	OrderBy []string
+}
+
+func (q Query) toSQL() string {
+	parts := make([]string, 0, 4)
+
+	if q.Search != "" {
+		parts = append(parts, "WHERE text LIKE '%"+q.Search+"%'")
+	}
+
+	if len(q.OrderBy) != 0 {
+		parts = append(parts, "ORDER BY "+strings.Join(q.OrderBy, ", "))
+	}
+
+	if q.Limit != 0 {
+		parts = append(parts, fmt.Sprint("LIMIT ", q.Limit))
+		if q.Offset != 0 {
+			parts = append(parts, fmt.Sprint("OFFSET ", q.Offset))
+		}
+	}
+
+	return strings.Join(parts, "\n")
+}
+
+func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
+	query := strings.Join(
+		[]string{
+			"SELECT id, text, score, time_created, is_offensive, is_nishbot",
+			"FROM quote",
+			q.toSQL(),
+		},
+		"\n",
 	)
+	fmt.Println(query)
+	rows, err := m.db.Query(query)
 	if err != nil {
 		return
 	}

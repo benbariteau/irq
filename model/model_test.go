@@ -141,55 +141,55 @@ func TestGetQuotes(t *testing.T) {
 	}
 
 	tests := []struct {
-		limit    int
-		offset   int
-		orderby  []string
+		query    Query
 		expected []Quote
 	}{
-		{0, 0, []string{}, dbquotes},
+		{Query{}, dbquotes},
 		// limit
-		{2, 0, []string{}, dbquotes[:2]},
+		{Query{Limit: 2}, dbquotes[:2]},
 		// limit and offset
-		{2, 2, []string{}, dbquotes[2:]},
+		{Query{Limit: 2, Offset: 2}, dbquotes[2:]},
 		// order (no ordering, default ascending)
 		{
-			0,
-			0,
-			[]string{"Score"},
+			Query{OrderBy: []string{"score"}},
 			[]Quote{dbquotes[1], dbquotes[0], dbquotes[2]},
 		},
 		// order descending
 		{
-			0,
-			0,
-			[]string{"Score DESC"},
+			Query{OrderBy: []string{"score DESC"}},
 			[]Quote{dbquotes[2], dbquotes[0], dbquotes[1]},
 		},
 		// order descending
 		{
-			0,
-			0,
-			[]string{"time_created ASC", "score DESC"},
+			Query{OrderBy: []string{"time_created ASC", "score DESC"}},
 			[]Quote{dbquotes[0], dbquotes[2], dbquotes[1]},
 		},
 		// limit and ordering
 		{
-			2,
-			0,
-			[]string{"Score DESC"},
+			Query{
+				Limit:   2,
+				OrderBy: []string{"Score DESC"},
+			},
 			[]Quote{dbquotes[2], dbquotes[0]},
 		},
 		// limit, ordering, and offset
 		{
-			2,
-			2,
-			[]string{"Score DESC"},
+			Query{
+				Limit:   2,
+				Offset:  2,
+				OrderBy: []string{"Score DESC"},
+			},
+			[]Quote{dbquotes[1]},
+		},
+		// searching
+		{
+			Query{Search: "javascript"},
 			[]Quote{dbquotes[1]},
 		},
 	}
 
 	for _, test := range tests {
-		quotes, err := tm.m.GetQuotes(test.limit, test.offset, test.orderby...)
+		quotes, err := tm.m.GetQuotes(test.query)
 		if err != nil {
 			t.Error("Got unexpected error: ", err)
 		}
