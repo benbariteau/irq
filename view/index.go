@@ -1,5 +1,9 @@
 package view
 
-func Index() string {
-	return "Hello, world!"
+import (
+	"github.com/martini-contrib/render"
+)
+
+func Index(r render.Render) {
+    r.Redirect("/all")
 }
