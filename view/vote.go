@@ -11,49 +11,36 @@ import (
 func Vote(req *http.Request, r render.Render, params martini.Params) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		env := map[string]interface{}{
-			"error": "invalid quote id",
-		}
-		r.JSON(404, env)
+		r.JSON(404, errorEnv{"invalid quote id"})
 		return
 	}
 
 	count, err := strconv.Atoi(req.FormValue("count"))
 	if err != nil {
-		env := map[string]interface{}{
-			"error": "invalid vote count",
-		}
-		r.JSON(404, env)
+		r.JSON(404, errorEnv{"invalid vote count"})
 		return
 	}
 
 	db, err := model.NewModel("quotes.db")
 	if err != nil {
-		env := map[string]interface{}{
-			"error": "what happen db conn no work",
-		}
-		r.JSON(500, env)
+		r.JSON(500, errorEnv{"what happen db conn no work"})
+		return
 	}
 
 	err = db.VoteQuote(id, count)
 	if err != nil {
-		env := map[string]interface{}{
-			"error": "unable to vote quote",
-		}
-		r.JSON(500, env)
+		r.JSON(500, errorEnv{"unable to vote quote"})
+		return
 	}
 
 	quote, err := db.GetQuote(id)
 	if err != nil {
-		env := map[string]interface{}{
-			"error": "quote not found",
-		}
-		r.JSON(404, env)
+		r.JSON(404, errorEnv{"quote not found"})
 		return
 	}
 
-	env := map[string]interface{}{
-		"score": quote.Score,
-	}
+	env := struct {
+		Score int `json:"score"`
+	}{quote.Score}
 	r.JSON(200, env)
 }

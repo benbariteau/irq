@@ -8,7 +8,7 @@ import (
 )
 
 func maxPage(totalItems, perPage int) int {
-	return (totalItems - 1)/perPage + 1
+	return (totalItems-1)/perPage + 1
 }
 
 func QuotesBase(r render.Render, req *http.Request, title string, orderBy []string) {
@@ -28,9 +28,9 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 
 	db, err := model.NewModel("quotes.db")
 	if err != nil {
-		env := map[string]interface{}{
-			"title": "error",
-			"error": "db connection failed",
+		env := errorPageEnv{
+			pageEnv{Title: "error"},
+			errorEnv{ErrorMessage: "db connection failed"},
 		}
 		r.HTML(500, "error", env)
 		return
@@ -38,15 +38,15 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 
 	offset := (page - 1) * count
 	quotes, err := db.GetQuotes(model.Query{
-        Limit: count,
-        Offset: offset,
-        Search: query,
-        OrderBy: orderBy,
-    })
+		Limit:   count,
+		Offset:  offset,
+		Search:  query,
+		OrderBy: orderBy,
+	})
 	if err != nil {
-		env := map[string]interface{}{
-			"title": "error",
-			"error": "failed to get quotes",
+		env := errorPageEnv{
+			pageEnv{Title: "error"},
+			errorEnv{ErrorMessage: "failed to get quotes"},
 		}
 		r.HTML(404, "error", env)
 		return
@@ -54,9 +54,9 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 
 	total, err := db.CountQuotes(query)
 	if err != nil {
-		env := map[string]interface{}{
-			"title": "error",
-			"error": "failed to get quotes",
+		env := errorPageEnv{
+			pageEnv{Title: "error"},
+			errorEnv{ErrorMessage: "failed to get quotes"},
 		}
 		r.HTML(404, "error", env)
 		return
@@ -69,18 +69,19 @@ func QuotesBase(r render.Render, req *http.Request, title string, orderBy []stri
 		nextPage = 0
 	}
 
-	env := map[string]interface{}{
-		"title":          title,
-		"quotes":         quotes,
-		"showPagination": true,
-		"count":          count,
-		"page":           page,
-		"previousPage":   previousPage,
-		"nextPage":       nextPage,
-		"total":          total,
-		"maxPage":        maxPage,
-		"query":          query,
+	env := quoteEnv{
+		pageEnv: pageEnv{
+			Title: title,
+		},
+		Quotes:         quotes,
+		ShowPagination: true,
+		Count:          count,
+		Page:           page,
+		PreviousPage:   previousPage,
+		NextPage:       nextPage,
+		Total:          total,
+		MaxPage:        maxPage,
+		Query:          query,
 	}
 	r.HTML(200, "quote", env)
 }
-
