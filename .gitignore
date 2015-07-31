@@ -27,3 +27,4 @@ _testmain.go
 *.swo
 batch/backfill_data/*
 *.pyc
+public/assets/css/custom/*
