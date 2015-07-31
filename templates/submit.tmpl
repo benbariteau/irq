@@ -1,20 +1,30 @@
+<h2>Submit a Quote</h2>
+
+<div>
+    <p>For the sake of uniformity, please try to stick to the following format for IRC quotes:</p>
+    <pre>&lt;name&gt; Message goes here.</pre>
+    <p>Please remove timestamps unless they are important to the context.</p>
+</div>
+
 <form method="POST">
     <div class="form-group">
-        <label for="text">Quote</label>
-        <textarea id="text" name="text" class="form-control" rows="3" required placeholder="14:58 < marley> (╯°□°）╯︵ ǝbɐʇs"></textarea>
+        <label for="text">Quote Text</label>
+        <textarea id="text" name="text" class="form-control" rows="4" required placeholder="14:58 < marley> (╯°□°）╯︵ ǝbɐʇs"></textarea>
     </div>
 
-    <div class="checkbox">
-        <label>
-        <input name="is_offensive" type="checkbox">
-        NSFW?
-        </label>
+    <div class="text-right">
+        <div class="checkbox-inline">
+            <label>
+            <input name="is_offensive" type="checkbox">
+            <span class="label label-warning">NSFW</span>
+            </label>
+        </div>
+        <div class="checkbox-inline">
+            <label>
+            <input name="is_nishbot" type="checkbox">
+            <span class="label label-default">nishbot</span>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </div>
-    <div class="checkbox">
-        <label>
-        <input name="is_nishbot" type="checkbox">
-        nishbot
-        </label>
-    </div>
-    <button type="submit" class="btn btn-default">Submit</button>
 </form>
