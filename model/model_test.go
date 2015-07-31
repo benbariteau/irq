@@ -43,7 +43,7 @@ func createTestModel(quotes ...Quote) (tm TestModel, err error) {
 	tm.dbfile = f
 
 	// read schema file
-	schemaBytes, err := ioutil.ReadFile("../schema/quote.sql")
+	schemaBytes, err := ioutil.ReadFile("./schema/quote.sql")
 	if err != nil {
 		return
 	}
