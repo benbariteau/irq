@@ -65,7 +65,7 @@ func Top(r render.Render, req *http.Request) {
 	}
 
 	env := map[string]interface{}{
-		"title":          "Latest",
+		"title":          "Top",
 		"quotes":         quotes,
 		"showPagination": true,
 		"count":          count,
