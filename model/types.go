@@ -7,12 +7,12 @@ import (
 )
 
 type Quote struct {
-	ID          int
-	Text        string
-	Score       int
-	TimeCreated time.Time
-	IsOffensive bool
-	IsNishbot   bool
+	ID          int       `json:"id"`
+	Text        string    `json:"text"`
+	Score       int       `json:"score"`
+	TimeCreated time.Time `json:"time_created"`
+	IsOffensive bool      `json:"is_offensive"`
+	IsNishbot   bool      `json:"is_nishbot"`
 }
 
 type rawQuote struct {

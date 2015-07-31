@@ -1,10 +1,10 @@
-{{ if .showPagination }}
+{{ if .ShowPagination }}
 <p class="text-right">
-    Page {{ .page }} / {{ .maxPage }} ({{ .total }} results)
+    Page {{ .Page }} / {{ .MaxPage }} ({{ .Total }} results)
 </p>
 {{ end }}
 
-{{ range $index, $quote := .quotes }}
+{{ range $index, $quote := .Quotes }}
 <div class="quote panel panel-default">
     <div class="panel-heading">
         {{ if $quote.IsOffensive }}
@@ -27,23 +27,23 @@
 </div>
 {{ end }}
 
-{{ if .showPagination }}
+{{ if .ShowPagination }}
 <nav>
     <ul class="pager">
-        {{ if .previousPage }}
-            {{ if .query }}
-                <li class="previous"><a href="?page={{.previousPage}}&count={{.count}}&query={{.query}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
+        {{ if .PreviousPage }}
+            {{ if .Query }}
+                <li class="previous"><a href="?page={{.PreviousPage}}&count={{.Count}}&query={{.Query}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
             {{ else }}
-                <li class="previous"><a href="?page={{.previousPage}}&count={{.count}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
+                <li class="previous"><a href="?page={{.PreviousPage}}&count={{.Count}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
             {{ end }}
         {{ else }}
             <li class="previous disabled"><a><span aria-hidden="true">&larr;</span>Previous</a></li>
         {{ end }}
-        {{ if .nextPage }}
-            {{ if .query }}
-                <li class="next"><a href="?page={{.nextPage}}&count={{.count}}&query={{.query}}">Next<span aria-hidden="true">&rarr;</span></a></li>
+        {{ if .NextPage }}
+            {{ if .Query }}
+                <li class="next"><a href="?page={{.NextPage}}&count={{.Count}}&query={{.Query}}">Next<span aria-hidden="true">&rarr;</span></a></li>
             {{ else }}
-                <li class="next"><a href="?page={{.nextPage}}&count={{.count}}">Next<span aria-hidden="true">&rarr;</span></a></li>
+                <li class="next"><a href="?page={{.NextPage}}&count={{.Count}}">Next<span aria-hidden="true">&rarr;</span></a></li>
             {{ end }}
         {{ else }}
             <li class="next disabled"><a>Next<span aria-hidden="true">&rarr;</span></a></li>

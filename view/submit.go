@@ -9,10 +9,7 @@ import (
 )
 
 func Submit(r render.Render) {
-	env := map[string]interface{}{
-		"title": "Submit",
-	}
-	r.HTML(200, "submit", env)
+	r.HTML(200, "submit", pageEnv{Title: "Submit"})
 }
 
 func SubmitForm(r render.Render, request *http.Request) {
@@ -22,11 +19,12 @@ func SubmitForm(r render.Render, request *http.Request) {
 
 	db, err := model.NewModel("quotes.db")
 	if err != nil {
-		env := map[string]interface{}{
-			"title": "error",
-			"error": "what happen db conn no work",
+		env := errorPageEnv{
+			pageEnv{Title: "error"},
+			errorEnv{ErrorMessage: "what happen db conn no work"},
 		}
 		r.HTML(500, "error", env)
+		return
 	}
 
 	err = db.AddQuote(model.Quote{
@@ -35,9 +33,9 @@ func SubmitForm(r render.Render, request *http.Request) {
 		IsNishbot:   isNishbot == "on",
 	})
 	if err != nil {
-		env := map[string]interface{}{
-			"title": "error",
-			"error": "unable to add quote",
+		env := errorPageEnv{
+			pageEnv{Title: "error"},
+			errorEnv{ErrorMessage: "unable to add quote"},
 		}
 		r.HTML(500, "error", env)
 	}
