@@ -15,12 +15,10 @@ func Submit(r render.Render) {
 func SubmitForm(db model.Model, r render.Render, request *http.Request) {
 	text := request.FormValue("text")
 	isOffensive := request.FormValue("is_offensive")
-	isNishbot := request.FormValue("is_nishbot")
 
 	err := db.AddQuote(model.Quote{
 		Text:        text,
 		IsOffensive: isOffensive == "on",
-		IsNishbot:   isNishbot == "on",
 	})
 	if err != nil {
 		env := ErrorPageEnv{
