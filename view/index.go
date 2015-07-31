@@ -5,5 +5,5 @@ import (
 )
 
 func Index(r render.Render) {
-    r.Redirect("/all")
+    r.Redirect("/top")
 }
