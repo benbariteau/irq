@@ -91,6 +91,10 @@ func (m Model) CountQuotes(search string) (count int, err error) {
 	return
 }
 
+func (m Model) CountAllQuotes() (count int, err error) {
+	return m.CountQuotes("")
+}
+
 func (m Model) AddQuote(q Quote) (err error) {
 	rawQ := fromQuote(q)
 	_, err = m.db.Exec(

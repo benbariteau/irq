@@ -32,7 +32,7 @@ if __name__ == '__main__':
     conn = sqlite3.connect('quotes.db')
     cursor = conn.cursor()
 
-    create_table(cursor, 'schema/quote.sql')
+    create_table(cursor, 'model/schema/quote.sql')
 
     insert_quotes(
         cursor,
