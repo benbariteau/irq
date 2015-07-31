@@ -27,6 +27,10 @@
         .score-box {
             margin-left: 0.5em;
         }
+        .remove-button {
+            float: right;
+            color: #ccc !important;
+        }
         body { padding-top: 70px; }
         </style>
         <link rel="stylesheet" href="/assets/css/custom/style.css">
@@ -119,6 +123,14 @@
 
             $('.score-box').on('click', '.upvote', vote(1));
             $('.score-box').on('click', '.downvote', vote(-1));
+
+            function remove(e) {
+                if (confirm("Do you really want to delete this quote? Don't be a jerk!")) {
+                    var quote = $(this).parents(".quote");
+                    quote[0].outerHTML = '<div class="alert alert-danger" role="alert"><b>BOOM!</b> This quote has been deleted.</div>';
+                }
+            }
+            $('.remove-button').on('click', remove);
 
             var query = url("?query");
             if (query) {
