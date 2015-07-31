@@ -42,6 +42,7 @@ func Quote(r render.Render, params martini.Params) {
 	env := map[string]interface{}{
 		"title": fmt.Sprintf("#%d", quote.ID),
 		"quotes": []model.Quote{quote},
+        "showPagination": false,
 	}
 	r.HTML(200, "quote", env)
 }
