@@ -23,6 +23,15 @@ func main() {
 	m.Get("/submit", view.Submit)
 	m.Get("/quote/:id", view.Quote)
 
+    m.NotFound(func (r render.Render) {
+        env := map[string]interface{}{
+            "title": "error",
+            "error": "page not found",
+        }
+        r.HTML(404, "error", env)
+        return
+	})
+
 	m.Post("/submit", view.SubmitForm)
 	m.Post("/vote/:id", view.Vote)
 
