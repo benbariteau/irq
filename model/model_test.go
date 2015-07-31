@@ -42,13 +42,6 @@ func createTestModel(quotes ...Quote) (tm TestModel, err error) {
 	}
 	tm.dbfile = f
 
-	// read schema file
-	schemaBytes, err := ioutil.ReadFile("./schema/quote.sql")
-	if err != nil {
-		return
-	}
-	schema := string(schemaBytes)
-
 	// open db conn
 	m, err := NewModel(f.Name())
 	if err != nil {
@@ -56,10 +49,25 @@ func createTestModel(quotes ...Quote) (tm TestModel, err error) {
 	}
 	tm.m = m
 
-	// create table(s)
-	_, err = m.db.Exec(schema)
+	// read schema files
+	filenames, err := filepath.Glob("./schema/*.sql")
 	if err != nil {
 		return
+	}
+
+	for _, filename := range filenames {
+		var schemaBytes []byte
+		schemaBytes, err = ioutil.ReadFile(filename)
+		if err != nil {
+			return
+		}
+		schema := string(schemaBytes)
+
+		// create table(s)
+		_, err = m.db.Exec(schema)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, quote := range quotes {
@@ -236,7 +244,7 @@ func TestAddQuote(t *testing.T) {
 }
 
 func TestDeleteQuote(t *testing.T) {
-	tm, err := createTestModel(Quote{ID: 1})
+	tm, err := createTestModel(Quote{ID: 1, Text: "haskell joke"})
 	defer tm.Close()
 	if err != nil {
 		t.Error("Got unexpected error: ", err)
@@ -252,12 +260,31 @@ func TestDeleteQuote(t *testing.T) {
 
 	tm.m.DeleteQuote(1)
 
-	q, err = tm.m.GetQuote(1)
+	qu, err := tm.m.GetQuote(1)
 	if err == nil {
 		t.Error("got nil when error expected")
 	}
-	if !reflect.DeepEqual(q, Quote{}) {
+	if !reflect.DeepEqual(qu, Quote{}) {
 		t.Error("Quote should be zero value", q)
+	}
+
+	rawQ := rawQuote{}
+
+	err = tm.m.db.QueryRow(
+		"SELECT id, text, score, time_created, is_offensive, is_nishbot from deleted_quote where id = ?",
+		q.ID,
+	).Scan(
+		&rawQ.ID,
+		&rawQ.Text,
+		&rawQ.Score,
+		&rawQ.TimeCreated,
+		&rawQ.IsOffensive,
+		&rawQ.IsNishbot,
+	)
+	expected := fromQuote(q)
+
+	if !reflect.DeepEqual(rawQ, expected) {
+		t.Error("Quote should be in deleted_quote", q)
 	}
 }
 

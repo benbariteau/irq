@@ -109,7 +109,25 @@ func (m Model) AddQuote(q Quote) (err error) {
 }
 
 func (m Model) DeleteQuote(id int) (err error) {
+	quote, err := m.GetQuote(id)
+	if err != nil {
+		return
+	}
 	_, err = m.db.Exec("DELETE FROM quote WHERE id = ?", id)
+	if err != nil {
+		return
+	}
+
+	rawQ := fromQuote(quote)
+	_, err = m.db.Exec(
+		"INSERT INTO deleted_quote(id, text, score, time_created, is_offensive, is_nishbot) values(?, ?, ?, ?, ?, ?)",
+		rawQ.ID,
+		rawQ.Text,
+		rawQ.Score,
+		rawQ.TimeCreated,
+		rawQ.IsOffensive,
+		rawQ.IsNishbot,
+	)
 	return
 }
 
