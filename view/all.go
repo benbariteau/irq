@@ -52,7 +52,8 @@ func All(r render.Render, req *http.Request) {
 		return
 	}
 
-	maxPage := len(allQuotes)/count + 1
+    total := len(allQuotes)
+	maxPage := total / count + 1
 	previousPage := page - 1
 	nextPage := page + 1
 	if nextPage > maxPage {
@@ -64,8 +65,11 @@ func All(r render.Render, req *http.Request) {
 		"quotes":         quotes,
 		"showPagination": true,
 		"count":          count,
+        "page": page,
 		"previousPage":   previousPage,
 		"nextPage":       nextPage,
+        "total": total,
+        "maxPage": maxPage,
 	}
 	r.HTML(200, "quote", env)
 }
