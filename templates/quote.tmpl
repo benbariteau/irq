@@ -20,3 +20,20 @@
     <div class="panel-body">{{ $quote.Text }}</div>
 </div>
 {{ end }}
+
+{{ if .showPagination }}
+<nav>
+    <ul class="pager">
+        {{ if .previousPage }}
+            <li class="previous"><a href="?page={{.previousPage}}&count={{.count}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
+        {{ else }}
+            <li class="previous disabled"><a><span aria-hidden="true">&larr;</span>Previous</a></li>
+        {{ end }}
+        {{ if .nextPage }}
+            <li class="next"><a href="?page={{.nextPage}}&count={{.count}}">Next<span aria-hidden="true">&rarr;</span></a></li>
+        {{ else }}
+            <li class="next disabled"><a>Next<span aria-hidden="true">&rarr;</span></a></li>
+        {{ end }}
+    </ul>
+</nav>
+{{ end }}
