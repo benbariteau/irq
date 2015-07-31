@@ -2,9 +2,11 @@ package view
 
 import (
 	"fmt"
-	"github.com/firba1/irq/model"
-	"github.com/martini-contrib/render"
 	"net/http"
+
+	"github.com/martini-contrib/render"
+
+	"github.com/firba1/irq/model"
 )
 
 func Random(db model.Model, r render.Render) {

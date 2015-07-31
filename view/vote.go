@@ -1,11 +1,13 @@
 package view
 
 import (
-	"github.com/firba1/irq/model"
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
 	"net/http"
 	"strconv"
+
+	"github.com/firba1/irq/model"
+
+	"github.com/go-martini/martini"
+	"github.com/martini-contrib/render"
 )
 
 func Vote(db model.Model, req *http.Request, r render.Render, params martini.Params) {

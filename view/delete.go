@@ -1,11 +1,13 @@
 package view
 
 import (
-	"github.com/firba1/irq/model"
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
 	"net/http"
 	"strconv"
+
+	"github.com/go-martini/martini"
+	"github.com/martini-contrib/render"
+
+	"github.com/firba1/irq/model"
 )
 
 func Delete(db model.Model, req *http.Request, r render.Render, params martini.Params) {

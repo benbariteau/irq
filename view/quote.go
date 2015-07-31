@@ -2,10 +2,12 @@ package view
 
 import (
 	"fmt"
-	"github.com/firba1/irq/model"
+	"strconv"
+
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
-	"strconv"
+
+	"github.com/firba1/irq/model"
 )
 
 func Quote(db model.Model, r render.Render, params martini.Params) {

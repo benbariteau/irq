@@ -3,10 +3,11 @@ package main
 import (
 	"reflect"
 
-	"github.com/firba1/irq/model"
-	"github.com/firba1/irq/view"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+
+	"github.com/firba1/irq/model"
+	"github.com/firba1/irq/view"
 )
 
 func main() {

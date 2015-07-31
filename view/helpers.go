@@ -1,10 +1,12 @@
 package view
 
 import (
-	"github.com/firba1/irq/model"
-	"github.com/martini-contrib/render"
 	"net/http"
 	"strconv"
+
+	"github.com/martini-contrib/render"
+
+	"github.com/firba1/irq/model"
 )
 
 func maxPage(totalItems, perPage int) int {
