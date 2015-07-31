@@ -22,6 +22,10 @@
             <a href="#" role="button" class="btn btn-default disabled btn-xs score">{{ $quote.Score }}</button>
             <a href="#" role="button" class="btn btn-default btn-xs upvote">++</a>
         </div>
+
+        <button type="button" data-id="{{ $quote.ID }}" class="btn btn-default btn-xs remove-button">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        </button>
     </div>
     <div class="panel-body">{{ $quote.Text }}</div>
 </div>
