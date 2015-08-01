@@ -19,7 +19,7 @@ func main() {
 	}))
 
 	m.Use(func(req *http.Request, c martini.Context) {
-		c.Map(view.IsJson(strings.HasSuffix(req.URL.Path, ".json")))
+		c.Map(view.IsJson(strings.HasSuffix(req.URL.Path, "json")))
 	})
 
 	// middleware to inject DB connection into each request
@@ -33,13 +33,13 @@ func main() {
 	})
 
 	m.Get("/", view.Index)
-	m.Get("/latest(.json|)", view.Latest)
-	m.Get("/all(.json|)", view.All)
-	m.Get("/random(.json|)", view.Random)
-	m.Get("/search(.json|)", view.Search)
+	m.Get(json("/latest"), view.Latest)
+	m.Get(json("/all"), view.All)
+	m.Get(json("/random"), view.Random)
+	m.Get(json("/search"), view.Search)
 	m.Get("/submit", view.Submit)
-	m.Get("/top(.json|)", view.Top)
-	m.Get("/quote/:id", view.Quote)
+	m.Get(json("/top"), view.Top)
+	m.Get(json("/quote/:id"), view.Quote)
 
 	m.NotFound(func(r render.Render, isJson view.IsJson) {
 		view.RenderError(r, 404, isJson, "not found")
@@ -51,4 +51,8 @@ func main() {
 	m.Delete("/quote/:id", view.Delete)
 
 	m.Run()
+}
+
+func json(pattern string) string {
+	return pattern + "((/|.)json|)"
 }
