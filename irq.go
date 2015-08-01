@@ -1,7 +1,8 @@
 package main
 
 import (
-	"reflect"
+	"net/http"
+	"strings"
 
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
@@ -17,36 +18,31 @@ func main() {
 		Layout: "base",
 	}))
 
+	m.Use(func(req *http.Request, c martini.Context) {
+		c.Map(view.IsJson(strings.HasSuffix(req.URL.Path, ".json")))
+	})
+
 	// middleware to inject DB connection into each request
-	m.Use(func(r render.Render, c martini.Context) {
+	m.Use(func(r render.Render, c martini.Context, isJson view.IsJson) {
 		db, err := model.NewModel("quotes.db")
 		if err != nil {
-			env := view.ErrorPageEnv{
-				view.PageEnv{Title: "error"},
-				view.ErrorEnv{ErrorMessage: "db connection failed"},
-			}
-			r.HTML(500, "error", env)
+			view.RenderError(r, 500, isJson, "db connection failed")
 			return
 		}
-		c.Set(reflect.TypeOf(db), reflect.ValueOf(db))
+		c.Map(db)
 	})
 
 	m.Get("/", view.Index)
-	m.Get("/latest", view.Latest)
-	m.Get("/all", view.All)
-	m.Get("/random", view.Random)
-	m.Get("/random.json", view.RandomJson)
-	m.Get("/top", view.Top)
-	m.Get("/search", view.Search)
+	m.Get("/latest(.json|)", view.Latest)
+	m.Get("/all(.json|)", view.All)
+	m.Get("/random(.json|)", view.Random)
+	m.Get("/search(.json|)", view.Search)
 	m.Get("/submit", view.Submit)
+	m.Get("/top(.json|)", view.Top)
 	m.Get("/quote/:id", view.Quote)
 
-	m.NotFound(func(r render.Render) {
-		env := view.ErrorPageEnv{
-			view.PageEnv{Title: "error"},
-			view.ErrorEnv{ErrorMessage: "page not found"},
-		}
-		r.HTML(404, "error", env)
+	m.NotFound(func(r render.Render, isJson view.IsJson) {
+		view.RenderError(r, 404, isJson, "not found")
 		return
 	})
 

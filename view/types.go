@@ -4,6 +4,8 @@ import (
 	"github.com/firba1/irq/model"
 )
 
+type IsJson bool
+
 type PageEnv struct {
 	Title string
 }
@@ -17,7 +19,7 @@ type ErrorPageEnv struct {
 	ErrorEnv
 }
 
-type quoteEnv struct {
+type quotePageEnv struct {
 	PageEnv
 	Quotes         []model.Quote
 	ShowPagination bool

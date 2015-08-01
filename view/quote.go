@@ -31,7 +31,7 @@ func Quote(db model.Model, r render.Render, params martini.Params) {
 		return
 	}
 
-	env := quoteEnv{
+	env := quotePageEnv{
 		PageEnv:        PageEnv{Title: fmt.Sprintf("#%d", quote.ID)},
 		Quotes:         []model.Quote{quote},
 		ShowPagination: false,
