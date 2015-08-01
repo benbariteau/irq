@@ -21,11 +21,7 @@ func SubmitForm(db model.Model, r render.Render, request *http.Request) {
 		IsOffensive: isOffensive == "on",
 	})
 	if err != nil {
-		env := ErrorPageEnv{
-			PageEnv{Title: "error"},
-			ErrorEnv{ErrorMessage: "unable to add quote"},
-		}
-		r.HTML(500, "error", env)
+		RenderError(r, 404, isJson, "unable to add quote")
 	}
 
 	r.Redirect("/latest")
