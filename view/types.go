@@ -21,13 +21,13 @@ type ErrorPageEnv struct {
 
 type quotePageEnv struct {
 	PageEnv
-	Quotes         []model.Quote
-	ShowPagination bool
-	Count          int
-	Page           int
-	PreviousPage   int
-	NextPage       int
-	Total          int
-	MaxPage        int
-	Query          string
+	Quotes          []model.Quote
+	ShowPagination  bool
+	Count           int
+	Page            int
+	PreviousPageURL string
+	NextPageURL     string
+	Total           int
+	MaxPage         int
+	Query           string
 }

@@ -34,21 +34,13 @@
 {{ if .ShowPagination }}
 <nav>
     <ul class="pager">
-        {{ if .PreviousPage }}
-            {{ if .Query }}
-                <li class="previous"><a href="?page={{.PreviousPage}}&count={{.Count}}&query={{.Query}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
-            {{ else }}
-                <li class="previous"><a href="?page={{.PreviousPage}}&count={{.Count}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
-            {{ end }}
+        {{ if .PreviousPageURL }}
+            <li class="previous"><a href="{{.PreviousPageURL}}"><span aria-hidden="true">&larr;</span>Previous</a></li>
         {{ else }}
             <li class="previous disabled"><a><span aria-hidden="true">&larr;</span>Previous</a></li>
         {{ end }}
-        {{ if .NextPage }}
-            {{ if .Query }}
-                <li class="next"><a href="?page={{.NextPage}}&count={{.Count}}&query={{.Query}}">Next<span aria-hidden="true">&rarr;</span></a></li>
-            {{ else }}
-                <li class="next"><a href="?page={{.NextPage}}&count={{.Count}}">Next<span aria-hidden="true">&rarr;</span></a></li>
-            {{ end }}
+        {{ if .NextPageURL }}
+            <li class="next"><a href="{{.NextPageURL}}">Next<span aria-hidden="true">&rarr;</span></a></li>
         {{ else }}
             <li class="next disabled"><a>Next<span aria-hidden="true">&rarr;</span></a></li>
         {{ end }}

@@ -2,6 +2,7 @@ package view
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/go-martini/martini"
@@ -12,6 +13,16 @@ import (
 
 func maxPage(totalItems, perPage int) int {
 	return (totalItems-1)/perPage + 1
+}
+
+func queryString(page, count int, query string) string {
+	v := url.Values{}
+	v.Add("page", strconv.Itoa(page))
+	v.Add("count", strconv.Itoa(count))
+	if len(query) > 0 {
+		v.Add("query", query)
+	}
+	return "?" + v.Encode()
 }
 
 func QuotesBase(title string, orderBy []string) martini.Handler {
@@ -58,25 +69,28 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 		}
 
 		maxPage := maxPage(total, count)
-		previousPage := page - 1
-		nextPage := page + 1
-		if nextPage > maxPage {
-			nextPage = 0
+
+		var previousPageURL, nextPageURL string
+		if page > 1 {
+			previousPageURL = queryString(page-1, count, query)
+		}
+		if page < maxPage {
+			nextPageURL = queryString(page+1, count, query)
 		}
 
 		env := quotePageEnv{
 			PageEnv: PageEnv{
 				Title: title,
 			},
-			Quotes:         quotes,
-			ShowPagination: true,
-			Count:          count,
-			Page:           page,
-			PreviousPage:   previousPage,
-			NextPage:       nextPage,
-			Total:          total,
-			MaxPage:        maxPage,
-			Query:          query,
+			Quotes:          quotes,
+			ShowPagination:  true,
+			Count:           count,
+			Page:            page,
+			PreviousPageURL: previousPageURL,
+			NextPageURL:     nextPageURL,
+			Total:           total,
+			MaxPage:         maxPage,
+			Query:           query,
 		}
 		r.HTML(200, "quote", env)
 	}
