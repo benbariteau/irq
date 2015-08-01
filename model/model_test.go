@@ -258,7 +258,10 @@ func TestDeleteQuote(t *testing.T) {
 		t.Error("Quote should be non-zero-value: ", q)
 	}
 
-	tm.m.DeleteQuote(1)
+	err = tm.m.DeleteQuote(1)
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
 
 	qu, err := tm.m.GetQuote(1)
 	if err == nil {
@@ -271,8 +274,7 @@ func TestDeleteQuote(t *testing.T) {
 	rawQ := rawQuote{}
 
 	err = tm.m.db.QueryRow(
-		"SELECT id, text, score, time_created, is_offensive, is_nishbot from deleted_quote where id = ?",
-		q.ID,
+		"SELECT id, text, score, time_created, is_offensive, is_nishbot from deleted_quote where id = 1",
 	).Scan(
 		&rawQ.ID,
 		&rawQ.Text,
@@ -281,10 +283,14 @@ func TestDeleteQuote(t *testing.T) {
 		&rawQ.IsOffensive,
 		&rawQ.IsNishbot,
 	)
+	if err != nil {
+		t.Error("Got unexpected error: ", err)
+	}
 	expected := fromQuote(q)
+	expected.ID = 1
 
 	if !reflect.DeepEqual(rawQ, expected) {
-		t.Error("Quote should be in deleted_quote", q)
+		t.Error("Quote should be in deleted_quote", rawQ, expected)
 	}
 }
 
