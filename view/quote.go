@@ -10,7 +10,7 @@ import (
 	"github.com/firba1/irq/model"
 )
 
-func Quote(db model.Model, r render.Render, params martini.Params) {
+func Quote(db model.Model, r render.Render, params martini.Params, isJson IsJson) {
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		RenderError(r, 404, isJson, "invalid quote id")
@@ -20,6 +20,11 @@ func Quote(db model.Model, r render.Render, params martini.Params) {
 	quote, err := db.GetQuote(id)
 	if err != nil {
 		RenderError(r, 404, isJson, "quote not found")
+		return
+	}
+
+	if isJson {
+		r.JSON(200, quote)
 		return
 	}
 
