@@ -81,6 +81,7 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 		env := quotePageEnv{
 			PageEnv: PageEnv{
 				Title: title,
+				Query: query,
 			},
 			Quotes:          quotes,
 			ShowPagination:  true,
@@ -90,7 +91,6 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 			NextPageURL:     nextPageURL,
 			Total:           total,
 			MaxPage:         maxPage,
-			Query:           query,
 		}
 		r.HTML(200, "quote", env)
 	}

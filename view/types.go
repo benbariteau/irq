@@ -8,6 +8,7 @@ type IsJson bool
 
 type PageEnv struct {
 	Title string
+	Query string
 }
 
 type ErrorEnv struct {
@@ -29,5 +30,4 @@ type quotePageEnv struct {
 	NextPageURL     string
 	Total           int
 	MaxPage         int
-	Query           string
 }
