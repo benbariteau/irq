@@ -4,13 +4,6 @@ import (
 	"time"
 )
 
-func searchWhereClause(search string) string {
-	if search == "" {
-		return ""
-	}
-	return "WHERE text LIKE '%" + search + "%'"
-}
-
 func toQuote(rawQ rawQuote) Quote {
 	return Quote{
 		ID:          rawQ.ID,

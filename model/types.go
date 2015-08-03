@@ -35,7 +35,7 @@ func (q Query) toSQL() string {
 	parts := make([]string, 0, 4)
 
 	if q.Search != "" {
-		parts = append(parts, searchWhereClause(q.Search))
+		parts = append(parts, "WHERE text LIKE ?")
 	}
 
 	if len(q.OrderBy) != 0 {

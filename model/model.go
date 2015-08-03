@@ -54,7 +54,12 @@ func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
 		},
 		"\n",
 	)
-	rows, err := m.db.Query(query)
+	queryArgs := make([]interface{}, 0, 1)
+	if q.Search != "" {
+		queryArgs = append(queryArgs, "%"+q.Search+"%")
+	}
+
+	rows, err := m.db.Query(query, queryArgs...)
 	if err != nil {
 		return
 	}
@@ -83,10 +88,11 @@ func (m Model) CountQuotes(search string) (count int, err error) {
 			[]string{
 				"SELECT count(*)",
 				"FROM quote",
-				searchWhereClause(search),
+				"WHERE text LIKE ?",
 			},
 			"\n",
 		),
+		"%"+search+"%",
 	).Scan(&count)
 	return
 }
