@@ -25,17 +25,36 @@ type rawQuote struct {
 }
 
 type Query struct {
-	Search  string
-	Limit   int
-	Offset  int
-	OrderBy []string
+	Search   string
+	Limit    int
+	Offset   int
+	OrderBy  []string
+	MaxLines int
+}
+
+func (q Query) WhereClause() string {
+	parts := make([]string, 0, 2)
+	if q.Search != "" {
+		parts = append(parts, "text LIKE ?")
+	}
+	if q.MaxLines != 0 {
+		parts = append(
+			parts,
+			fmt.Sprint("LENGTH(text) - LENGTH(REPLACE(text, X'0A', '')) + 1 <= ", q.MaxLines),
+		)
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return "WHERE " + strings.Join(parts, " AND ")
 }
 
 func (q Query) toSQL() string {
-	parts := make([]string, 0, 4)
+	parts := make([]string, 0, 3)
 
-	if q.Search != "" {
-		parts = append(parts, "WHERE text LIKE ?")
+	whereClause := q.WhereClause()
+	if whereClause != "" {
+		parts = append(parts, whereClause)
 	}
 
 	if len(q.OrderBy) != 0 {

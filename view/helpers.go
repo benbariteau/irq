@@ -15,12 +15,15 @@ func maxPage(totalItems, perPage int) int {
 	return (totalItems-1)/perPage + 1
 }
 
-func queryString(page, count int, query string) string {
+func queryString(page, count int, query model.Query) string {
 	v := url.Values{}
 	v.Add("page", strconv.Itoa(page))
 	v.Add("count", strconv.Itoa(count))
-	if len(query) > 0 {
-		v.Add("query", query)
+	if len(query.Search) > 0 {
+		v.Add("query", query.Search)
+	}
+	if query.MaxLines > 0 {
+		v.Add("max-lines", strconv.Itoa(query.MaxLines))
 	}
 	return "?" + v.Encode()
 }
@@ -29,7 +32,7 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 	return func(db model.Model, r render.Render, req *http.Request, isJson IsJson) {
 		qs := req.URL.Query()
 
-		query := qs.Get("query")
+		search := qs.Get("query")
 
 		page, err := strconv.Atoi(qs.Get("page"))
 		if err != nil || page < 1 {
@@ -41,13 +44,20 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 			count = 20
 		}
 
+		maxLines, err := strconv.Atoi(qs.Get("max-lines"))
+		if err != nil || maxLines < 1 {
+			maxLines = 0
+		}
+
 		offset := (page - 1) * count
-		quotes, err := db.GetQuotes(model.Query{
-			Limit:   count,
-			Offset:  offset,
-			Search:  query,
-			OrderBy: orderBy,
-		})
+		query := model.Query{
+			Limit:    count,
+			Offset:   offset,
+			MaxLines: maxLines,
+			Search:   search,
+			OrderBy:  orderBy,
+		}
+		quotes, err := db.GetQuotes(query)
 		if err != nil {
 			RenderError(r, 404, isJson, "failed to get quotes")
 			return
@@ -81,7 +91,7 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 		env := quotePageEnv{
 			PageEnv: PageEnv{
 				Title: title,
-				Query: query,
+				Query: search,
 			},
 			Quotes:          quotes,
 			ShowPagination:  true,

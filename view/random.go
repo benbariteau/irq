@@ -3,6 +3,7 @@ package view
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/martini-contrib/render"
 
@@ -12,12 +13,18 @@ import (
 func Random(db model.Model, r render.Render, req *http.Request, isJson IsJson) {
 	qs := req.URL.Query()
 
-	query := qs.Get("query")
+	search := qs.Get("query")
+
+	maxLines, err := strconv.Atoi(qs.Get("max-lines"))
+	if err != nil || maxLines < 1 {
+		maxLines = 0
+	}
 
 	quotes, err := db.GetQuotes(model.Query{
-		Limit:   1,
-		Search:  query,
-		OrderBy: []string{"random()"},
+		Limit:    1,
+		Search:   search,
+		MaxLines: maxLines,
+		OrderBy:  []string{"random()"},
 	})
 
 	if err != nil || len(quotes) == 0 {

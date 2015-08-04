@@ -376,7 +376,9 @@ func TestCountQuotes(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		count, err := tm.m.CountQuotes(test.search)
+		count, err := tm.m.CountQuotes(Query{
+			Search: test.search,
+		})
 		if err != nil {
 			t.Error("Got unexpected error: ", err)
 		}

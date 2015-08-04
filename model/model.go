@@ -82,23 +82,28 @@ func (m Model) GetQuotes(q Query) (quotes []Quote, err error) {
 	return
 }
 
-func (m Model) CountQuotes(search string) (count int, err error) {
-	err = m.db.QueryRow(
-		strings.Join(
-			[]string{
-				"SELECT count(*)",
-				"FROM quote",
-				"WHERE text LIKE ?",
-			},
-			"\n",
-		),
-		"%"+search+"%",
-	).Scan(&count)
+func (m Model) CountQuotes(q Query) (count int, err error) {
+	queryParts := []string{
+		"SELECT count(*)",
+		"FROM quote",
+	}
+	whereClause := q.WhereClause()
+	if whereClause != "" {
+		queryParts = append(queryParts, whereClause)
+	}
+	query := strings.Join(queryParts, "\n")
+
+	queryArgs := make([]interface{}, 0, 1)
+	if q.Search != "" {
+		queryArgs = append(queryArgs, "%"+q.Search+"%")
+	}
+
+	err = m.db.QueryRow(query, queryArgs...).Scan(&count)
 	return
 }
 
 func (m Model) CountAllQuotes() (count int, err error) {
-	return m.CountQuotes("")
+	return m.CountQuotes(Query{})
 }
 
 func (m Model) AddQuote(q Quote) (err error) {
