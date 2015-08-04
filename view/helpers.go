@@ -25,6 +25,9 @@ func queryString(page, count int, query model.Query) string {
 	if query.MaxLines > 0 {
 		v.Add("max-lines", strconv.Itoa(query.MaxLines))
 	}
+	if query.Clean {
+		v.Add("clean", "true")
+	}
 	return "?" + v.Encode()
 }
 
@@ -49,12 +52,18 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 			maxLines = 0
 		}
 
+		clean, err := strconv.ParseBool(qs.Get("clean"))
+		if err != nil {
+			clean = false
+		}
+
 		offset := (page - 1) * count
 		query := model.Query{
 			Limit:    count,
 			Offset:   offset,
 			MaxLines: maxLines,
 			Search:   search,
+			Clean:    clean,
 			OrderBy:  orderBy,
 		}
 		quotes, err := db.GetQuotes(query)

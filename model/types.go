@@ -30,10 +30,11 @@ type Query struct {
 	Offset   int
 	OrderBy  []string
 	MaxLines int
+	Clean    bool
 }
 
 func (q Query) WhereClause() string {
-	parts := make([]string, 0, 2)
+	parts := make([]string, 0, 3)
 	if q.Search != "" {
 		parts = append(parts, "text LIKE ?")
 	}
@@ -42,6 +43,9 @@ func (q Query) WhereClause() string {
 			parts,
 			fmt.Sprint("LENGTH(text) - LENGTH(REPLACE(text, X'0A', '')) + 1 <= ", q.MaxLines),
 		)
+	}
+	if q.Clean {
+		parts = append(parts, "not is_offensive and not is_nishbot")
 	}
 	if len(parts) == 0 {
 		return ""
