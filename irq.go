@@ -40,6 +40,7 @@ func main() {
 	m.Get("/submit", view.Submit)
 	m.Get(json("/top"), view.Top)
 	m.Get(json("/quote/:id"), view.Quote)
+	m.Get("/status", view.Status)
 
 	m.NotFound(func(r render.Render, isJson view.IsJson) {
 		view.RenderError(r, 404, isJson, "not found")
