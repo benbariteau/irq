@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,7 +13,10 @@ import (
 	"github.com/firba1/irq/view"
 )
 
+var Port = flag.Int("port", 3000, "port to run on")
+
 func main() {
+	flag.Parse()
 	m := martini.Classic()
 
 	m.Use(render.Renderer(render.Options{
@@ -51,7 +56,7 @@ func main() {
 	m.Post("/vote/:id", view.Vote)
 	m.Delete("/quote/:id", view.Delete)
 
-	m.Run()
+	m.RunOnAddr(fmt.Sprintf(":%v", *Port))
 }
 
 func json(pattern string) string {
