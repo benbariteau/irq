@@ -19,6 +19,9 @@ func main() {
 	flag.Parse()
 	m := martini.Classic()
 
+	// allow for custom assets
+	m.Use(martini.Static("custom_assets"))
+
 	m.Use(render.Renderer(render.Options{
 		Layout: "base",
 	}))
