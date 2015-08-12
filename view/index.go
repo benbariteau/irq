@@ -5,5 +5,5 @@ import (
 )
 
 func Index(r render.Render) {
-	r.Redirect("/top")
+	r.Redirect("/latest")
 }
