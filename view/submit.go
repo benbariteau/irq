@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/firba1/irq/model"
@@ -21,7 +22,7 @@ func SubmitForm(db model.Model, r render.Render, request *http.Request) {
 		IsOffensive: isOffensive == "on",
 	})
 	if err != nil {
-		RenderError(r, 404, IsJson(false), "unable to add quote")
+		RenderError(r, 404, IsJson(false), fmt.Sprint("unable to add quote", err))
 	}
 
 	r.Redirect("/latest")

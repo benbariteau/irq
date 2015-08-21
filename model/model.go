@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -15,8 +16,8 @@ type Model struct {
 /*
 NewModel creates a new model with a DB connection to the give dbPath (currently sqlite)
 */
-func NewModel(dbPath string) (m Model, err error) {
-	db, err := sql.Open("sqlite3", dbPath)
+func NewModel(dbType, dbPath string) (m Model, err error) {
+	db, err := sql.Open(dbType, dbPath)
 	if err != nil {
 		return
 	}

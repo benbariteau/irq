@@ -30,11 +30,11 @@ func Random(db model.Model, r render.Render, req *http.Request, isJson IsJson) {
 		Search:   search,
 		MaxLines: maxLines,
 		Clean:    clean,
-		OrderBy:  []string{"random()"},
+		OrderBy:  []string{"rand()"},
 	})
 
 	if err != nil || len(quotes) == 0 {
-		RenderError(r, 500, isJson, "quote not found")
+		RenderError(r, 500, isJson, fmt.Sprint("quote not found", err))
 		return
 	}
 

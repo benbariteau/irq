@@ -19,7 +19,7 @@ type rawQuote struct {
 	ID          int
 	Text        string
 	Score       int
-	TimeCreated int64
+	TimeCreated interface{}
 	IsOffensive int
 	IsNishbot   int
 }

@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -68,13 +69,13 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 		}
 		quotes, err := db.GetQuotes(query)
 		if err != nil {
-			RenderError(r, 404, isJson, "failed to get quotes")
+			RenderError(r, 500, isJson, fmt.Sprint("failed to get quotes", err))
 			return
 		}
 
 		total, err := db.CountQuotes(query)
 		if err != nil {
-			RenderError(r, 404, isJson, "failed to get quotes")
+			RenderError(r, 500, isJson, "failed to get quotes")
 			return
 		}
 

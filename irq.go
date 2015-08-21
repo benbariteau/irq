@@ -4,19 +4,36 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+	"github.com/stvp/go-toml-config"
 
 	"github.com/firba1/irq/model"
 	"github.com/firba1/irq/view"
 )
 
-var Port = flag.Int("port", 3000, "port to run on")
+// command line flags
+var (
+	Port   = flag.Int("port", 3000, "port to run on")
+	Config = flag.String("config", "irq.toml", "path for config for db and stuff")
+)
+
+// toml config values
+var (
+	dbType = config.String("db.type", "sqlite3")
+	dbPath = config.String("db.path", "quotes.db")
+)
 
 func main() {
 	flag.Parse()
+	err := config.Parse(*Config)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	m := martini.Classic()
 
 	// allow for custom assets
@@ -32,7 +49,7 @@ func main() {
 
 	// middleware to inject DB connection into each request
 	m.Use(func(r render.Render, c martini.Context, isJson view.IsJson) {
-		db, err := model.NewModel("quotes.db")
+		db, err := model.NewModel(*dbType, *dbPath)
 		if err != nil {
 			view.RenderError(r, 500, isJson, "db connection failed")
 			return
