@@ -1,5 +1,5 @@
 CREATE TABLE `deleted_quote` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `text` text NOT NULL,
   `score` int(11) NOT NULL,
   `is_offensive` tinyint(1) NOT NULL DEFAULT '0',
