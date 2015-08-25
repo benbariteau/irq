@@ -17,12 +17,19 @@ type Model struct {
 NewModel creates a new model with a DB connection to the give dbPath (currently sqlite)
 */
 func NewModel(dbType, dbPath string) (m Model, err error) {
-	db, err := sql.Open(dbType, dbPath)
+	db, err := sql.Open(dbType, configureDbPath(dbType, dbPath))
 	if err != nil {
 		return
 	}
 	m.db = db
 	return
+}
+
+func configureDbPath(dbType, dbPath string) string {
+	if dbType == "mysql" {
+		dbPath = dbPath + "?parseTime=true"
+	}
+	return dbPath
 }
 
 func (m Model) GetQuote(id int) (quote Quote, err error) {
