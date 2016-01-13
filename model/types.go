@@ -11,8 +11,7 @@ type Quote struct {
 	Text        string    `json:"text"`
 	Score       int       `json:"score"`
 	TimeCreated time.Time `json:"time_created"`
-	IsOffensive bool      `json:"is_offensive"`
-	IsNishbot   bool      `json:"is_nishbot"`
+	Tags        []string  `json:"tags"`
 }
 
 type rawQuote struct {
@@ -20,37 +19,57 @@ type rawQuote struct {
 	Text        string
 	Score       int
 	TimeCreated interface{}
-	IsOffensive int
-	IsNishbot   int
+	Tags        string
 }
 
 type Query struct {
-	Search   string
-	Limit    int
-	Offset   int
-	OrderBy  []string
-	MaxLines int
-	Clean    bool
+	Search      string
+	Limit       int
+	Offset      int
+	OrderBy     []string
+	MaxLines    int
+	IncludeTags []string
+	ExcludeTags []string
 }
 
 func (q Query) WhereClause() string {
 	parts := make([]string, 0, 3)
 	if q.Search != "" {
-		parts = append(parts, "text LIKE ?")
+		parts = append(parts, "quote.text LIKE ?")
 	}
 	if q.MaxLines != 0 {
 		parts = append(
 			parts,
-			fmt.Sprint("LENGTH(text) - LENGTH(REPLACE(text, X'0A', '')) + 1 <= ", q.MaxLines),
+			fmt.Sprint("LENGTH(quote.text) - LENGTH(REPLACE(quote.text, X'0A', '')) + 1 <= ", q.MaxLines),
 		)
 	}
-	if q.Clean {
-		parts = append(parts, "not is_offensive and not is_nishbot")
+	if len(q.IncludeTags) != 0 {
+		parts = append(
+			parts,
+			fmt.Sprintf(
+				`quote.id IN (SELECT quote_id FROM quote_tag WHERE tag IN (%s) GROUP BY quote_id HAVING count(quote_id) = %d)`,
+				nArgs(len(q.IncludeTags)),
+				len(q.IncludeTags),
+			),
+		)
+	}
+	if len(q.ExcludeTags) != 0 {
+		parts = append(
+			parts,
+			fmt.Sprintf(
+				`quote.id NOT IN (SELECT quote_id FROM quote_tag WHERE tag IN (%s))`,
+				nArgs(len(q.ExcludeTags)),
+			),
+		)
 	}
 	if len(parts) == 0 {
 		return ""
 	}
 	return "WHERE " + strings.Join(parts, " AND ")
+}
+
+func nArgs(n int) string {
+	return strings.Join(strings.Split(strings.Repeat("?", n), ""), ",")
 }
 
 func (q Query) toSQL() string {
@@ -60,6 +79,8 @@ func (q Query) toSQL() string {
 	if whereClause != "" {
 		parts = append(parts, whereClause)
 	}
+
+	parts = append(parts, "GROUP BY quote.id")
 
 	if len(q.OrderBy) != 0 {
 		parts = append(parts, "ORDER BY "+strings.Join(q.OrderBy, ", "))

@@ -20,17 +20,13 @@ func Random(db model.Model, r render.Render, req *http.Request, isJson IsJson) {
 		maxLines = 0
 	}
 
-	clean, err := strconv.ParseBool(qs.Get("clean"))
-	if err != nil {
-		clean = false
-	}
-
 	quotes, err := db.GetQuotes(model.Query{
-		Limit:    1,
-		Search:   search,
-		MaxLines: maxLines,
-		Clean:    clean,
-		OrderBy:  []string{"rand()"},
+		Limit:       1,
+		Search:      search,
+		MaxLines:    maxLines,
+		OrderBy:     []string{"rand()"},
+		IncludeTags: qs["tags"],
+		ExcludeTags: qs["exclude-tags"],
 	})
 
 	if err != nil || len(quotes) == 0 {

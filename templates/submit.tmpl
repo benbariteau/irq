@@ -9,16 +9,23 @@
 <form method="POST">
     <div class="form-group">
         <label for="text">Quote Text</label>
-        <textarea id="text" name="text" class="form-control" rows="4" required placeholder="14:58 < marley> (╯°□°）╯︵ ǝbɐʇs"></textarea>
+        <textarea id="text" name="text" class="form-control" rows="5" required placeholder="14:58 < marley> (╯°□°）╯︵ ǝbɐʇs"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags" class="form-control" placeholder="Add tags">
+        Quick Tags:
+        {{ range $tag := .PopularTags }}
+            {{ if eq $tag "nsfw" }}
+                <a href="#" class="label label-warning popular-tag">{{ $tag }}</a>
+            {{ else }}
+                <a href="#" class="label label-default popular-tag">{{ $tag }}</a>
+            {{ end }}
+        {{ end }}
     </div>
 
     <div class="text-right">
-        <div class="checkbox-inline">
-            <label>
-            <input name="is_offensive" type="checkbox">
-            <span class="label label-warning">NSFW</span>
-            </label>
-        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>

@@ -7,6 +7,10 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
+        <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+        <link href="/assets/css/jquery.tagit.css" rel="stylesheet">
+
+
         <!-- Optional theme -->
         <link rel="stylesheet" href="/assets/css/theme.css">
         <style>
@@ -32,6 +36,9 @@
             color: #ccc !important;
         }
         body { padding-top: 70px; }
+        ul.tagit {
+            border: 1px solid #ccc !important;
+        }
         </style>
         <link rel="stylesheet" href="/assets/css/custom/style.css">
     </head>
@@ -69,8 +76,6 @@
             </div>
         </nav>
 
-        
-
         <div class="container">
             {{ yield }}
             <hr>
@@ -83,9 +88,11 @@
 
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/1.8.7/url.min.js"></script>
         <script src="/assets/js/jquery.highlight-5.js"></script>
+        <script src="/assets/js/tag-it.min.js"></script>
         <script>
             function updateScore(element, score) {
                 element.text(score);
@@ -143,6 +150,19 @@
             if (query) {
                 $('.quote .panel-body').highlight(query);
             }
+
+            $("#tags").tagit({
+                placeholderText: "Add tags"
+            });
+            $(".popular-tag").click(function (e) {
+                e.preventDefault();
+                $("#tags").tagit("createTag", $(this).text());
+            });
+
+
+            $(".readonly-tags").tagit({
+                readOnly: true
+            });
         </script>
     </body>
 </html>

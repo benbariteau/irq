@@ -26,9 +26,14 @@ func queryString(page, count int, query model.Query) string {
 	if query.MaxLines > 0 {
 		v.Add("max-lines", strconv.Itoa(query.MaxLines))
 	}
-	if query.Clean {
-		v.Add("clean", "true")
+
+	for _, tag := range query.IncludeTags {
+		v.Add("tags", tag)
 	}
+	for _, tag := range query.ExcludeTags {
+		v.Add("exclude-tags", tag)
+	}
+
 	return "?" + v.Encode()
 }
 
@@ -53,28 +58,29 @@ func QuotesBase(title string, orderBy []string) martini.Handler {
 			maxLines = 0
 		}
 
-		clean, err := strconv.ParseBool(qs.Get("clean"))
-		if err != nil {
-			clean = false
-		}
-
 		offset := (page - 1) * count
 		query := model.Query{
-			Limit:    count,
-			Offset:   offset,
-			MaxLines: maxLines,
-			Search:   search,
-			Clean:    clean,
-			OrderBy:  orderBy,
+			Limit:       count,
+			Offset:      offset,
+			MaxLines:    maxLines,
+			Search:      search,
+			OrderBy:     orderBy,
+			IncludeTags: qs["tags"],
+			ExcludeTags: qs["exclude-tags"],
 		}
 		quotes, err := db.GetQuotes(query)
 		if err != nil {
+			fmt.Println("err")
+			fmt.Println(err)
+
 			RenderError(r, 500, isJson, fmt.Sprint("failed to get quotes", err))
 			return
 		}
 
 		total, err := db.CountQuotes(query)
 		if err != nil {
+			fmt.Println("err")
+			fmt.Println(err)
 			RenderError(r, 500, isJson, "failed to get quotes")
 			return
 		}

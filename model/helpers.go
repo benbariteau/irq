@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 )
 
@@ -18,8 +19,7 @@ func toQuote(rawQ rawQuote) Quote {
 		Text:        rawQ.Text,
 		Score:       rawQ.Score,
 		TimeCreated: timeCreated,
-		IsOffensive: rawQ.IsOffensive != 0,
-		IsNishbot:   rawQ.IsNishbot != 0,
+		Tags:        strings.Split(strings.ToLower(rawQ.Tags), ","),
 	}
 }
 
@@ -29,15 +29,5 @@ func fromQuote(quote Quote) rawQuote {
 		Text:        quote.Text,
 		Score:       quote.Score,
 		TimeCreated: quote.TimeCreated,
-		IsOffensive: boolToInt(quote.IsOffensive),
-		IsNishbot:   boolToInt(quote.IsNishbot),
-	}
-}
-
-func boolToInt(b bool) int {
-	if b {
-		return 1
-	} else {
-		return 0
 	}
 }

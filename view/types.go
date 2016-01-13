@@ -20,6 +20,11 @@ type ErrorPageEnv struct {
 	ErrorEnv
 }
 
+type submitPageEnv struct {
+	PageEnv
+	PopularTags []string
+}
+
 type quotePageEnv struct {
 	PageEnv
 	Quotes          []model.Quote

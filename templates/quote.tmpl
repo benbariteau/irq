@@ -7,11 +7,12 @@
 {{ range $index, $quote := .Quotes }}
 <div class="quote panel panel-default">
     <div class="panel-heading">
-        {{ if $quote.IsOffensive }}
-        <span class="label label-warning">NSFW</span>
-        {{ end }}
-        {{ if $quote.IsNishbot }}
-        <span class="label label-default">nishbot</span>
+        {{ range $tag := $quote.Tags }}
+            {{ if eq $tag "nsfw" }}
+                <a href="?tags={{ $tag }}" class="label label-warning">{{ $tag }}</a>
+            {{ else }}
+                <a href="?tags={{ $tag }}" class="label label-default">{{ $tag }}</a>
+            {{ end }}
         {{ end }}
         <a href="/quote/{{ $quote.ID }}">
             #{{ $quote.ID }}
