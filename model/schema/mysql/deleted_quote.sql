@@ -6,4 +6,4 @@ CREATE TABLE `deleted_quote` (
   `is_nishbot` tinyint(1) NOT NULL DEFAULT '0',
   `time_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

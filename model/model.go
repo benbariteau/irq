@@ -27,7 +27,7 @@ func NewModel(dbType, dbPath string) (m Model, err error) {
 
 func configureDbPath(dbType, dbPath string) string {
 	if dbType == "mysql" {
-		dbPath = dbPath + "?parseTime=true"
+		dbPath = dbPath + "?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
 	}
 	return dbPath
 }
