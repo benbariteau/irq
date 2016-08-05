@@ -9,9 +9,9 @@
     <div class="panel-heading">
         {{ range $tag := $quote.Tags }}
             {{ if eq $tag "nsfw" }}
-                <a href="?tags={{ $tag }}" class="label label-warning">{{ $tag }}</a>
+                <a href="/all?tags={{ $tag }}" class="label label-warning">{{ $tag }}</a>
             {{ else }}
-                <a href="?tags={{ $tag }}" class="label label-default">{{ $tag }}</a>
+                <a href="/all?tags={{ $tag }}" class="label label-default">{{ $tag }}</a>
             {{ end }}
         {{ end }}
         <a href="/quote/{{ $quote.ID }}">
