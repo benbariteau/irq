@@ -132,7 +132,7 @@
             $('.score-box').on('click', '.downvote', vote(-1));
 
             function remove(e) {
-                if (confirm("Do you really want to delete this quote? Don't be a jerk!")) {
+                if (confirm("Are you sure you want to delete this quote?")) {
                     var quote = $(this).parents(".quote");
                     var id = $(this).data('id');
                     $.ajax({
