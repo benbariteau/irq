@@ -19,6 +19,9 @@ _cgo_export.*
 
 _testmain.go
 
+# for vendored dependencies, should be managed by glide
+vendor/
+
 *.exe
 *.test
 *.prof
