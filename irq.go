@@ -47,13 +47,15 @@ func main() {
 		c.Map(view.IsJson(strings.HasSuffix(req.URL.Path, "json")))
 	})
 
+	db, err := model.NewModel(*dbType, *dbPath)
+	// TODO allow this to be configured
+	db.SetMaxOpenConns(100)
+	if err != nil {
+		panic(err)
+	}
+
 	// middleware to inject DB connection into each request
 	m.Use(func(r render.Render, c martini.Context, isJson view.IsJson) {
-		db, err := model.NewModel(*dbType, *dbPath)
-		if err != nil {
-			view.RenderError(r, 500, isJson, "db connection failed")
-			return
-		}
 		c.Map(db)
 	})
 
