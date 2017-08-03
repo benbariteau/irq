@@ -48,8 +48,6 @@ func main() {
 	})
 
 	db, err := model.NewModel(*dbType, *dbPath)
-	// TODO allow this to be configured
-	db.SetMaxOpenConns(100)
 	if err != nil {
 		panic(err)
 	}

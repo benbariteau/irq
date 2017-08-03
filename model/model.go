@@ -21,6 +21,10 @@ func NewModel(dbType, dbPath string) (m Model, err error) {
 	if err != nil {
 		return
 	}
+
+	// TODO allow this to be configured
+	db.SetMaxOpenConns(100)
+
 	m.db = db
 	return
 }
